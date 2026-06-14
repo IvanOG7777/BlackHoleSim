@@ -7,7 +7,7 @@ add_executable(BlackHoleSim
         Source/main.cpp
         Source/glad.c
         Header/Core.h
-        Header/Particle.cpp
+        Source/Particle.cpp
         Header/Particle.h
 )
 
