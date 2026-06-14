@@ -25,8 +25,6 @@ public:
         z = -z;
     }
 
-
-
     float magnitude() const {
         return std:: sqrtf(x*x + y*y + z*z);
     }
