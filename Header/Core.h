@@ -74,7 +74,7 @@ public:
     }
 
     // // subtracts &vector3 values from this and returns new object
-    Vector3 operator-(Vector3 &vector) const {
+    Vector3 operator-(const Vector3 &vector) const {
         return {x - vector.x, y - vector.y, z - vector.z};
     }
 

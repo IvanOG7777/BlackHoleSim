@@ -34,13 +34,13 @@ void Particle::integrate(float deltaTime) {
     clearAccumulator();
 }
 
-std::ostream &operator<<(std::ostream &stream, Vector3 vector) {
-    stream << "x: " << vector.x << ", y:" << vector.y << " z: " << vector.z << "\n";
+std::ostream &operator<<(std::ostream &stream, const Vector3 &vector) {
+    stream << "x: " << vector.x << ", y: " << vector.y << " z: " << vector.z << "\n";
     return stream;
 }
 
 /////////// Position functions
-void Particle::setPosition(Vector3 &passedPosition) {
+void Particle::setPosition(const Vector3 &passedPosition) {
     position = passedPosition;
 }
 
@@ -54,13 +54,13 @@ const Vector3 &Particle::getPosition() const {
     return position;
 }
 
-void Particle::printPosition() {
+void Particle::printPosition() const {
     std:: cout << position;
 }
 ///////////
 
 /////////// Velocity functions
-void Particle::setVelocity(Vector3 &passedVelocity) {
+void Particle::setVelocity(const Vector3 &passedVelocity) {
     velocity = passedVelocity;
 }
 
@@ -74,13 +74,13 @@ const Vector3 &Particle::getVelocity() const {
     return velocity;
 }
 
-void Particle::printVelocity() {
+void Particle::printVelocity() const {
     std:: cout << velocity;
 }
 ///////////
 
 /////////// Acceleration functions
-void Particle::setAcceleration(Vector3 &passedAcceleration) {
+void Particle::setAcceleration(const Vector3 &passedAcceleration) {
     acceleration = passedAcceleration;
 }
 
@@ -94,7 +94,7 @@ const Vector3 &Particle::getAcceleration() const {
     return acceleration;
 }
 
-void Particle::printAcceleration() {
+void Particle::printAcceleration() const {
     std:: cout << acceleration;
 }
 ///////////
@@ -136,7 +136,7 @@ void Particle::setRadius(float passedRadius) {
     radius = passedRadius;
 }
 
-const float Particle::getRadius() const {
+const float &Particle::getRadius() const {
     return radius;
 }
 

@@ -2,11 +2,11 @@
 // Created by elder on 6/14/2026.
 //
 
-#include <iostream>
-#include "Core.h"
-
 #ifndef PARTICLESIM_PARTICLE_H
 #define PARTICLESIM_PARTICLE_H
+
+#include <iostream>
+#include "Core.h"
 
 
 class Particle {
@@ -27,23 +27,23 @@ protected:
 public:
     Particle();
 
-    friend std:: ostream &operator<<(std::ostream stream, Vector3 &vector);
+    friend std:: ostream &operator<<(std::ostream &stream, const Vector3 &vector);
 
-    void setPosition(Vector3 &passedPosition);
+    void setPosition(const Vector3 &passedPosition);
     void setPosition(float x, float y, float z);
     const Vector3 &getPosition() const;
-    void printPosition();
+    void printPosition() const;
 
-    void setVelocity(Vector3 &passedVelocity);
+    void setVelocity(const Vector3 &passedVelocity);
     void setVelocity(float x, float y, float z);
     const Vector3 &getVelocity() const;
-    void printVelocity();
+    void printVelocity() const;
 
 
-    void setAcceleration(Vector3 &passedAcceleration);
+    void setAcceleration(const Vector3 &passedAcceleration);
     void setAcceleration(float x, float y, float z);
     const Vector3 &getAcceleration() const;
-    void printAcceleration();
+    void printAcceleration() const;
 
     void setMass(float passedMass);
     const float &getInverseMass() const;
@@ -56,7 +56,7 @@ public:
     const float &getKinetic() const;
 
     void setRadius(float passedRadius);
-    const float getRadius() const;
+    const float &getRadius() const;
 
     void addForce(const Vector3 &passedForce);
     void addForce(float x, float y, float z);
