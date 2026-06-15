@@ -39,6 +39,41 @@ const char *fragmentShader = R"GLSL(
         }
     )GLSL";
 
+void keepInFrame(Particle &particle, int &w, int &h) {
+    float radius = particle.getRadius();
+
+    float minX = radius;
+    float maxX = static_cast<float>(w) - radius;
+    float minY = radius;
+    float maxY = static_cast<float>(h) - radius;
+
+    Vector3 pos = particle.getPosition();
+    Vector3 vel = particle.getVelocity();
+
+    if (pos.x < minX) {
+        pos.x = minX;
+        vel.x = -vel.x * COR;
+    }
+
+    if (pos.x > maxX) {
+        pos.x = maxX;
+        vel.x = - vel.x * COR;
+    }
+
+    if (pos.y < minY) {
+        pos.y = minY;
+        vel.y = -vel.y * COR;
+    }
+
+    if (pos.y > maxY) {
+        pos.y = maxY;
+        vel.y = - vel.y * COR;
+    }
+
+    particle.setPosition(pos);
+    particle.setVelocity(vel);
+}
+
 int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -89,9 +124,9 @@ int main() {
     particle.printVelocity();
     particle.printAcceleration();
 
-    particle.setPosition(0, 10, 0);
+    particle.setPosition(200, 200, 0);
     particle.setVelocity(1, 0, 0);
-    particle.setAcceleration(0, -9.8, 0);
+    particle.setAcceleration(0, -980, 0);
     particle.setDamping(1.0f);
     particle.setMass(5);
     particle.setRadius(10);
@@ -101,11 +136,11 @@ int main() {
 
     std:: vector<Vector3> circleVertices;
     Vector3 center;
-    int segments = 32;
+    int segments = 64;
     circleVertices.reserve(segments + 2);
     circleVertices.emplace_back(center);
 
-    for (int i = 0; i < segments; i++) {
+    for (int i = 0; i <= segments; i++) {
         float progress = static_cast<float>(i) / static_cast<float>(segments);
         float theta = progress * 2.0f * PI;
 
@@ -157,21 +192,9 @@ int main() {
         if (isStill == false) {
             particle.update(dt);
 
-            if (particle.getPosition().y <= 0.0f) {
-                Vector3 pos = particle.getPosition();
-                Vector3 vel = particle.getVelocity();
+            keepInFrame(particle, w, h);
 
-                pos.y = 0;
-                vel.y = -vel.y * COR;
-
-                if (std::abs(vel.y) <= yVelThreshold) {
-                    particle.setAcceleration({});
-                    isStill = true;
-                }
-
-                particle.setPosition(pos);
-                particle.setVelocity(vel);
-            }
+            if (particle.getPosition().y == particle.getRadius() && particle.getVelocity().y <= 0.0f) isStill = true;
             particle.printPosition();
             particle.printVelocity();
             particle.printAcceleration();
@@ -180,8 +203,9 @@ int main() {
             std::cout << std::endl;
         }
 
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
         glUniform2f(uOffsetLoc, particle.getPosition().x, particle.getPosition().y);
-        glUniform1f(uScaleLoc, particle.getRadius());
+        glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(circleVertices.size()));
 
         glfwPollEvents();
