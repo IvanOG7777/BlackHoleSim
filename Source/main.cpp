@@ -4,6 +4,10 @@
 #include <iostream>
 #include "../Header/Particle.h"
 
+float COR = .65f;
+float yVelThreshold = 0.2f;
+// float ECC =
+
 int main() {
 
     // glfwInit();
@@ -39,33 +43,48 @@ int main() {
     // glfwDestroyWindow(window);
     // glfwTerminate();
 
+    bool hitFloor = false;
+    bool isStill = false;
     Particle particle;
     particle.printPosition();
     particle.printVelocity();
     particle.printAcceleration();
 
-    particle.setPosition(1,2,3);
-    particle.setVelocity(4,5,6);
-    particle.setAcceleration(7,8,9);
+    particle.setPosition(0,10,0);
+    particle.setVelocity(1,0,0);
+    particle.setAcceleration(0,-9.8,0);
+    particle.setDamping(1.0f);
     particle.setMass(5);
     particle.setRadius(10);
     particle.setKinetic(5);
 
-    std:: cout << std:: endl;
-    particle.printPosition();
-    particle.printVelocity();
-    particle.printAcceleration();
-    std:: cout << std:: endl;
-
-    particle.addForce(10,0,0);
-
-    for (int i = 0; i < 100; i++) {
+    int loopCounter = 0;
+    while (isStill == false) {
         particle.update(0.016f);
+        if (particle.getPosition().y <= 0.0f) {
+            Vector3 vel = particle.getVelocity();
+            Vector3 pos = particle.getPosition();
+
+            pos.y = 0;
+            vel.y = -vel.y * COR;
+
+            particle.setVelocity(vel);
+            particle.setPosition(pos);
+        }
+
+        if (particle.getPosition().y == 0 && std::abs(particle.getVelocity().y) <= yVelThreshold) {
+            particle.setAcceleration({});
+            particle.setVelocity({});
+            isStill = true;
+        }
         particle.printPosition();
         particle.printVelocity();
         particle.printAcceleration();
+        loopCounter++;
         std:: cout << std:: endl;
     }
+
+    std:: cout << "Loops done: " << loopCounter << std:: endl;
 
     return 0;
 }

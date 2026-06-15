@@ -18,18 +18,18 @@ Particle::Particle() {
     radius = 0.0f;
 }
 
-void Particle::integrate(float deltaTime) {
+void Particle::integrate(float duration) {
     if (inverseMass <= 0.0f) return;
 
-    assert(deltaTime > 0.0f);
+    assert(duration > 0.0f);
 
     Vector3 resultingAcceleration = acceleration + forceAccumulator * inverseMass;
 
-    velocity.addScaledVector(resultingAcceleration, deltaTime);
+    velocity.addScaledVector(resultingAcceleration, duration);
 
-    position.addScaledVector(velocity, deltaTime);
+    position.addScaledVector(velocity, duration);
 
-    velocity *= powf(damping, deltaTime);
+    velocity *= powf(damping, duration);
 
     clearAccumulator();
 }
@@ -55,7 +55,7 @@ const Vector3 &Particle::getPosition() const {
 }
 
 void Particle::printPosition() const {
-    std:: cout << position;
+    std:: cout << "Position: " << position;
 }
 ///////////
 
@@ -75,7 +75,7 @@ const Vector3 &Particle::getVelocity() const {
 }
 
 void Particle::printVelocity() const {
-    std:: cout << velocity;
+    std:: cout << "Velocity: " << velocity;
 }
 ///////////
 
@@ -95,7 +95,7 @@ const Vector3 &Particle::getAcceleration() const {
 }
 
 void Particle::printAcceleration() const {
-    std:: cout << acceleration;
+    std:: cout << "Acceleration: " << acceleration;
 }
 ///////////
 
