@@ -11,6 +11,8 @@
 float COR = .65f;
 float yVelThreshold = 0.2f;
 constexpr float PI = 3.14159265358979323846f;
+constexpr float W = 1280.0f;
+constexpr float H = 720.0f;
 
 const char *vertexShader = R"GLSL(
         #version 330 core
@@ -84,7 +86,7 @@ int main() {
         return -1;
     }
 
-    GLFWwindow *window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(W, H, "Hello World", NULL, NULL);
     if (window == nullptr) {
         std::cerr << "WINDOW ERROR, COULDN'T CREATE, WINDOW IS NULL\n";
         glfwTerminate();
@@ -153,6 +155,35 @@ int main() {
         circleVertices.emplace_back(position);
     }
 
+    int slices = 15;
+    std:: vector<Vector3> vertices;
+    std:: vector<Vector3> indices;
+
+    for (size_t row = 0; row <= slices; row++) {
+        for (size_t col = 0; col <= slices; col++) {
+
+            float x = static_cast<float>(row) / static_cast<float>(slices) * H;
+            float y = static_cast<float>(col) / static_cast<float>(slices) * W;
+            GLfloat z = 0;
+
+            Vector3 newVec3(x,y,z);
+            std:: cout << newVec3;
+            vertices.push_back(newVec3);
+        }
+    }
+
+    for (size_t row = 0; row <= slices; row++) {
+        for (size_t col = 0; col <= slices; col++) {
+            GLuint bottomLeft = row * (slices + 1) + col;
+            GLuint bottomRight = row * (slices + 1) + col + 1;
+            GLuint topLeft = (row + 1) * (slices + 1) + col;
+            GLuint topRight = (row + 1) * (slices + 1) + col + 1;
+
+            indices.emplace_back(bottomLeft, bottomRight, topLeft);
+            indices.emplace_back(bottomRight, topRight, topLeft);
+        }
+    }
+
     GLuint VAO = 0;
     GLuint VBO = 0;
 
@@ -178,14 +209,14 @@ int main() {
         startTime = currentTime;
         const auto dt = deltaTime.count();
 
-        int w = 1280;
-        int h = 720;
+        int w = W;
+        int h = H;
 
         glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        glUniform2f(uResolutionLoc, static_cast<float>(w), static_cast<float>(h));
+        glUniform2f(uResolutionLoc, W, H);
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
 

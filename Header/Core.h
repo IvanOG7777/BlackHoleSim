@@ -149,6 +149,11 @@ public:
         c->normalize();
         (*b) = (*c) % (*a);
     }
+
+    friend std:: ostream &operator<<(std:: ostream &stream, const Vector3 &vector) {
+        stream << "x: " << vector.x << ", y: " << vector.y << ", z:" << vector.z << std:: endl;
+        return stream;
+    }
 };
 
 

@@ -34,7 +34,7 @@ void Particle::integrate(float duration) {
     clearAccumulator();
 }
 
-std::ostream &operator<<(std::ostream &stream, const Vector3 &vector) {
+std::ostream &operator<<(std::ostream &stream, Vector3 &vector) {
     stream << "x: " << vector.x << ", y: " << vector.y << " z: " << vector.z << "\n";
     return stream;
 }
