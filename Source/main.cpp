@@ -6,13 +6,10 @@
 #include <vector>
 #include <cmath>
 
+#include "../Header/Constants.h"
 #include "../Header/Particle.h"
-
-float COR = .65f;
-float yVelThreshold = 0.2f;
-constexpr float PI = 3.14159265358979323846f;
-constexpr float W = 1280.0f;
-constexpr float H = 720.0f;
+#include "../Header/Renderer.h"
+#include "../Header/Physics.h"
 
 const char *vertexShader = R"GLSL(
         #version 330 core
@@ -40,41 +37,6 @@ const char *fragmentShader = R"GLSL(
             FragColor = vec4(uColor, 1.0); // pass in the RBG plus alpha
         }
     )GLSL";
-
-void keepInFrame(Particle &particle, int &w, int &h) {
-    float radius = particle.getRadius();
-
-    float minX = radius;
-    float maxX = static_cast<float>(w) - radius;
-    float minY = radius;
-    float maxY = static_cast<float>(h) - radius;
-
-    Vector3 pos = particle.getPosition();
-    Vector3 vel = particle.getVelocity();
-
-    if (pos.x < minX) {
-        pos.x = minX;
-        vel.x = -vel.x * COR;
-    }
-
-    if (pos.x > maxX) {
-        pos.x = maxX;
-        vel.x = - vel.x * COR;
-    }
-
-    if (pos.y < minY) {
-        pos.y = minY;
-        vel.y = -vel.y * COR;
-    }
-
-    if (pos.y > maxY) {
-        pos.y = maxY;
-        vel.y = - vel.y * COR;
-    }
-
-    particle.setPosition(pos);
-    particle.setVelocity(vel);
-}
 
 int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -122,38 +84,23 @@ int main() {
 
     bool isStill = false;
     Particle particle;
-    particle.printPosition();
-    particle.printVelocity();
-    particle.printAcceleration();
+    Particle BH;
 
-    particle.setPosition(200, 200, 0);
-    particle.setVelocity(1, 0, 0);
+    BH.setPosition(640, 360, 0);
+    BH.setRadius(20);
+    BH.setMass(100);
+
+    particle.setPosition(640, 500, 0);
     particle.setAcceleration(0, -980, 0);
     particle.setDamping(1.0f);
     particle.setMass(5);
     particle.setRadius(10);
-    particle.setKinetic(5);
 
-    int loopCounter = 0;
+    std:: vector<Vector3> particleVertices;
+    std:: vector<Vector3> BHVertices;
 
-    std:: vector<Vector3> circleVertices;
-    Vector3 center;
-    int segments = 64;
-    circleVertices.reserve(segments + 2);
-    circleVertices.emplace_back(center);
-
-    for (int i = 0; i <= segments; i++) {
-        float progress = static_cast<float>(i) / static_cast<float>(segments);
-        float theta = progress * 2.0f * PI;
-
-        Vector3 position;
-
-        position.x = center.x + std::cos(theta) * particle.getRadius();
-        position.y = center.y + std::sin(theta) * particle.getRadius();
-        position.z = 0;
-
-        circleVertices.emplace_back(position);
-    }
+    particleVertices = makeUnitCircle(particle.getRadius());
+    BHVertices = makeUnitCircle(BH.getRadius());
 
     int slices = 15;
     std:: vector<Vector3> vertices;
@@ -184,8 +131,8 @@ int main() {
         }
     }
 
-    GLuint VAO = 0;
-    GLuint VBO = 0;
+    GLuint VAO = 0, BHVAO = 0;
+    GLuint VBO = 0, BHVBO = 0;
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -193,7 +140,21 @@ int main() {
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER,circleVertices.size() * sizeof(Vector3),circleVertices.data(),GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,particleVertices.size() * sizeof(Vector3), particleVertices.data(),GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    glGenVertexArrays(1, &BHVAO);
+    glGenBuffers(1, &BHVBO);
+
+    glBindVertexArray(BHVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, BHVBO);
+    glBufferData(GL_ARRAY_BUFFER,BHVertices.size() * sizeof(Vector3), BHVertices.data(),GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void *)0);
     glEnableVertexAttribArray(0);
@@ -217,27 +178,18 @@ int main() {
 
         glUseProgram(shaderProgram);
         glUniform2f(uResolutionLoc, W, H);
+
         glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-        if (isStill == false) {
-            particle.update(dt);
-
-            keepInFrame(particle, w, h);
-
-            if (particle.getPosition().y == particle.getRadius() && particle.getVelocity().y <= 0.0f) isStill = true;
-            particle.printPosition();
-            particle.printVelocity();
-            particle.printAcceleration();
-            std:: cout << "Delta time: " << dt << std::endl;
-            loopCounter++;
-            std::cout << std::endl;
-        }
-
         glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
         glUniform2f(uOffsetLoc, particle.getPosition().x, particle.getPosition().y);
         glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(circleVertices.size()));
+        glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(particleVertices.size()));
+
+        glBindVertexArray(BHVAO);
+        glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
+        glUniform2f(uOffsetLoc, BH.getPosition().x, BH.getPosition().y);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(BHVertices.size()));
 
         glfwPollEvents();
         glfwSwapBuffers(window);
@@ -245,8 +197,6 @@ int main() {
 
     glfwDestroyWindow(window);
     glfwTerminate();
-
-    std::cout << "Loops done: " << loopCounter << std::endl;
 
     return 0;
 }

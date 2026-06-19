@@ -4,11 +4,17 @@ project(ParticleSim)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(BlackHoleSim
-        Source/main.cpp
         Source/glad.c
-        Header/Core.h
+        Source/main.cpp
         Source/Particle.cpp
+        Source/Renderer.cpp
+
+        Header/Core.h
         Header/Particle.h
+        Header/Constants.h
+        Header/Renderer.h
+        Header/Physics.h
+        Source/Physics.cpp
 )
 
 target_include_directories(BlackHoleSim PRIVATE

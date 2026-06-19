@@ -6,6 +6,7 @@
 #define BLACKHOLE_SIM_CORE_H
 
 #include <cmath>
+#include <iostream>
 
 class Vector3 {
 public:
