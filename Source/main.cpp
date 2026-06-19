@@ -82,7 +82,6 @@ int main() {
     GLuint uOffsetLoc = glGetUniformLocation(shaderProgram, "uOffset");
     GLuint uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
 
-    bool isStill = false;
     Particle particle;
     Particle BH;
 
@@ -90,8 +89,7 @@ int main() {
     BH.setRadius(20);
     BH.setMass(100);
 
-    particle.setPosition(640, 500, 0);
-    particle.setAcceleration(0, -980, 0);
+    particle.setPosition(900, 360, 0);
     particle.setDamping(1.0f);
     particle.setMass(5);
     particle.setRadius(10);
@@ -102,34 +100,33 @@ int main() {
     particleVertices = makeUnitCircle(particle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
 
-    int slices = 15;
-    std:: vector<Vector3> vertices;
-    std:: vector<Vector3> indices;
-
-    for (size_t row = 0; row <= slices; row++) {
-        for (size_t col = 0; col <= slices; col++) {
-
-            float x = static_cast<float>(row) / static_cast<float>(slices) * H;
-            float y = static_cast<float>(col) / static_cast<float>(slices) * W;
-            GLfloat z = 0;
-
-            Vector3 newVec3(x,y,z);
-            std:: cout << newVec3;
-            vertices.push_back(newVec3);
-        }
-    }
-
-    for (size_t row = 0; row <= slices; row++) {
-        for (size_t col = 0; col <= slices; col++) {
-            GLuint bottomLeft = row * (slices + 1) + col;
-            GLuint bottomRight = row * (slices + 1) + col + 1;
-            GLuint topLeft = (row + 1) * (slices + 1) + col;
-            GLuint topRight = (row + 1) * (slices + 1) + col + 1;
-
-            indices.emplace_back(bottomLeft, bottomRight, topLeft);
-            indices.emplace_back(bottomRight, topRight, topLeft);
-        }
-    }
+    // int slices = 15;
+    // std:: vector<Vector3> vertices;
+    // std:: vector<Vector3> indices;
+    //
+    // for (size_t row = 0; row <= slices; row++) {
+    //     for (size_t col = 0; col <= slices; col++) {
+    //
+    //         float x = static_cast<float>(row) / static_cast<float>(slices) * H;
+    //         float y = static_cast<float>(col) / static_cast<float>(slices) * W;
+    //         GLfloat z = 0;
+    //
+    //         Vector3 newVec3(x,y,z);
+    //         vertices.push_back(newVec3);
+    //     }
+    // }
+    //
+    // for (size_t row = 0; row <= slices; row++) {
+    //     for (size_t col = 0; col <= slices; col++) {
+    //         GLuint bottomLeft = row * (slices + 1) + col;
+    //         GLuint bottomRight = row * (slices + 1) + col + 1;
+    //         GLuint topLeft = (row + 1) * (slices + 1) + col;
+    //         GLuint topRight = (row + 1) * (slices + 1) + col + 1;
+    //
+    //         indices.emplace_back(bottomLeft, bottomRight, topLeft);
+    //         indices.emplace_back(bottomRight, topRight, topLeft);
+    //     }
+    // }
 
     GLuint VAO = 0, BHVAO = 0;
     GLuint VBO = 0, BHVBO = 0;
@@ -172,6 +169,13 @@ int main() {
 
         int w = W;
         int h = H;
+
+        Vector3 acceleration = gravitationalAcceleration(BH.getPosition(), particle.getPosition(), MU);
+        particle.setAcceleration(acceleration);
+        particle.update(dt);
+        particle.printPosition();
+        particle.printVelocity();
+        particle.printAcceleration();
 
         glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT);

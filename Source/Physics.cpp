@@ -37,3 +37,18 @@ void keepInFrame(Particle &particle) {
     particle.setPosition(pos);
     particle.setVelocity(vel);
 }
+
+Vector3 gravitationalAcceleration(const Vector3 &BHPosition, const Vector3 &particlePosition, float mu) {
+
+    Vector3 direction = BHPosition - particlePosition; // gets direction vector
+    float distanceSquared = direction.squareMagnitude(); // gets distance
+
+    if (distanceSquared <= 0.0f) return {};
+
+    float distance = std:: sqrtf(distanceSquared);
+    float distanceCubed = distanceSquared * distance;
+
+    Vector3 acceleration = (direction * mu) / distanceCubed; // calculates acceleration
+
+    return acceleration;
+}

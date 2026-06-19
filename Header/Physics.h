@@ -9,4 +9,6 @@
 #include "Constants.h"
 void keepInFrame(Particle &particle);
 
+Vector3 gravitationalAcceleration(const Vector3 &BHPosition, const Vector3 &particlePosition, float mu);
+
 #endif //PARTICLESIM_PHYSICS_H

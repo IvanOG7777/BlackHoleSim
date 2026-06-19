@@ -10,6 +10,6 @@ const float yVelThreshold = 0.2f;
 constexpr float PI = 3.14159265358979323846f;
 constexpr float W = 1280.0f;
 constexpr float H = 720.0f;
-const float MU = 400.0f;
+const float MU = 10000.0f;
 
 #endif //PARTICLESIM_CONSTANTS_H
