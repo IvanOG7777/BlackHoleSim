@@ -4,6 +4,8 @@
 
 #include "../Header/Renderer.h"
 
+#include "glad/glad.h"
+
 std::vector<Vector3> makeUnitCircle(const float &radius) {
     std::vector<Vector3> vertices;
     int segments = 64;
@@ -26,23 +28,29 @@ std::vector<Vector3> makeUnitCircle(const float &radius) {
     return vertices;
 }
 
-// std::vector<std::vector<Vector3>> makeGrid(int slices) {
-//     std:: vector<Vector3> vertices;
-//     std:: vector<Vector3> indices;
-//
-//     for (int row = 0; row <= slices; row++) {
-//         for (int col = 0; col <= slices; col++) {
-//
-//             float x = static_cast<float>(row) / static_cast<float>(slices) * H;
-//             float y = static_cast<float>(col) / static_cast<float>(slices) * W;
-//
-//             vertices.emplace_back(x, y, 0);
-//         }
-//     }
-//
-//     for (int row = 0; row <= slices; row++) {
-//         for (int col = 0; col <= slices; col++) {
-//
-//         }
-//     }
-// }
+std::vector<std::vector<Vector3>> makeGrid(int slices) {
+    std:: vector<Vector3> vertices;
+    std:: vector<Vector3> indices;
+
+    for (int row = 0; row <= slices; row++) {
+        for (int col = 0; col <= slices; col++) {
+
+            float x = static_cast<float>(row) / static_cast<float>(slices) * H;
+            float y = static_cast<float>(col) / static_cast<float>(slices) * W;
+
+            vertices.emplace_back(x, y, 0);
+        }
+    }
+
+    for (int row = 0; row <= slices; row++) {
+        for (int col = 0; col <= slices; col++) {
+            GLuint bottomLeft = row * (slices + 1) + col;
+            GLuint bottomRight = row * (slices + 1) + col + 1;
+            GLuint topLeft = (row + 1) * (slices + 1) + col;
+            GLuint topRight = (row + 1) * (slices + 1) + col + 1;
+
+            Vector3 tri1(bottomLeft, bottomRight, topLeft);
+            Vector3 tri2()
+        }
+    }
+}
