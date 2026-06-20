@@ -160,6 +160,8 @@ int main() {
     glBindVertexArray(0);
 
 
+    bool hasCaptured = false;
+
     auto startTime = std::chrono::high_resolution_clock::now();
     while (!glfwWindowShouldClose(window)) {
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -173,6 +175,13 @@ int main() {
         Vector3 acceleration = gravitationalAcceleration(BH.getPosition(), particle.getPosition(), MU);
         particle.setAcceleration(acceleration);
         particle.update(dt);
+        hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
+        if (hasCaptured == true) {
+            particle.setVelocity({});
+            particle.setAcceleration({});
+            particle.setPosition(900, 360, 0);
+        }
+
         particle.printPosition();
         particle.printVelocity();
         particle.printAcceleration();

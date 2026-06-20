@@ -52,3 +52,15 @@ Vector3 gravitationalAcceleration(const Vector3 &BHPosition, const Vector3 &part
 
     return acceleration;
 }
+
+bool hasBeenCaptured(const Vector3 &BHPosition, const Vector3 &particlePosition, float captureRadius) {
+    Vector3 direction = BHPosition - particlePosition;
+
+    float distance = direction.magnitude();
+
+    return distance <= captureRadius;
+}
+
+float orbitalSpeed(float mu, const float &radius) {
+    
+}
