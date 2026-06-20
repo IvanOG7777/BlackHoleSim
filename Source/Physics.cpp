@@ -94,3 +94,11 @@ Vector3 circularVelocity(const Vector3& BHPosition, const Vector3& particlePosit
 
     return velocity;
 }
+
+float orbitalRadius(const Vector3& BHPosition, const Vector3& particlePosition) {
+    Vector3 displacement = BHPosition - particlePosition;
+
+    float radius = displacement.magnitude();
+
+    return radius;
+}

@@ -19,4 +19,6 @@ Vector3 orbitalTangent(const Vector3 &BHPosition, const Vector3 &particlePositio
 
 Vector3 circularVelocity(const Vector3 &BHPosition, const Vector3 &particlePosition, const float &mu, const float &radius);
 
+float orbitalRadius(const Vector3 &BHPosition, const Vector3 &particlePosition);
+
 #endif //PARTICLESIM_PHYSICS_H

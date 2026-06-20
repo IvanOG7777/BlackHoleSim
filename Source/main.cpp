@@ -94,6 +94,12 @@ int main() {
     particle.setMass(5);
     particle.setRadius(10);
 
+    float initOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
+
+    Vector3 velocity = circularVelocity(BH.getPosition(), particle.getPosition(), MU, initOrbitalRadius);
+
+    particle.setVelocity(velocity);
+
     std:: vector<Vector3> particleVertices;
     std:: vector<Vector3> BHVertices;
 
@@ -182,9 +188,8 @@ int main() {
             particle.setPosition(900, 360, 0);
         }
 
-        particle.printPosition();
-        particle.printVelocity();
-        particle.printAcceleration();
+        auto currentOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
+        std:: cout << currentOrbitalRadius << std:: endl;
 
         glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT);
