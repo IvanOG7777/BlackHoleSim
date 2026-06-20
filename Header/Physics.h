@@ -15,4 +15,6 @@ bool hasBeenCaptured (const Vector3 &BHPosition, const Vector3 &particlePosition
 
 float orbitalSpeed(float mu, const float &radius);
 
+Vector3 orbitalTangent(Vector3 &BHPosition, Particle &particlePosition);
+
 #endif //PARTICLESIM_PHYSICS_H

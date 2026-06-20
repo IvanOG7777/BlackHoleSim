@@ -62,5 +62,12 @@ bool hasBeenCaptured(const Vector3 &BHPosition, const Vector3 &particlePosition,
 }
 
 float orbitalSpeed(float mu, const float &radius) {
+    float velocity = std::sqrtf(mu / radius);
+
+    return velocity;
+}
+
+
+Vector3 orbitalTangent(Vector3 &BHPosition, Particle &particlePosition) {
     
 }
