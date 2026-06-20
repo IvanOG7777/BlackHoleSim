@@ -61,13 +61,36 @@ bool hasBeenCaptured(const Vector3 &BHPosition, const Vector3 &particlePosition,
     return distance <= captureRadius;
 }
 
-float orbitalSpeed(float mu, const float &radius) {
-    float velocity = std::sqrtf(mu / radius);
+float orbitalSpeed(const float &mu, const float &radius) {
+    float speed = std::sqrtf(mu / radius);
 
-    return velocity;
+    return speed;
 }
 
 
-Vector3 orbitalTangent(Vector3 &BHPosition, Particle &particlePosition) {
-    
+Vector3 orbitalTangent(const Vector3 &BHPosition, const Vector3 &particlePosition) {
+    Vector3 tangent = BHPosition - particlePosition; // get direction;
+
+    float x = tangent.x;
+    float y = tangent.y;
+
+    // Swap values and make perpendicular;
+    tangent.x = -y;
+    tangent.y = x;
+
+    // normalize new vector
+    tangent.normalize();
+
+    // returns the direction particle should be traveling in the y direction to combat gravitational pull
+    // return normalized vector of y = 1 or y = -1
+    return tangent;
+}
+
+Vector3 circularVelocity(const Vector3& BHPosition, const Vector3& particlePosition, const float &mu, const float &radius) {
+    float speed = orbitalSpeed(mu, radius);
+    Vector3 tangent = orbitalTangent(BHPosition, particlePosition);
+
+    Vector3 velocity = tangent * speed;
+
+    return velocity;
 }

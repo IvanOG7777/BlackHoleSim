@@ -86,7 +86,7 @@ int main() {
     Particle BH;
 
     BH.setPosition(640, 360, 0);
-    BH.setRadius(20);
+    BH.setRadius(25);
     BH.setMass(100);
 
     particle.setPosition(900, 360, 0);

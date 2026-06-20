@@ -36,7 +36,7 @@ public:
 
     void normalize() {
         float length = magnitude();
-        if (length > 0) {
+        if (length > 0.0f) {
             x /= length;
             y /= length;
             z /= length;

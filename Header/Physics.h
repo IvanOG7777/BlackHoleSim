@@ -13,8 +13,10 @@ Vector3 gravitationalAcceleration(const Vector3 &BHPosition, const Vector3 &part
 
 bool hasBeenCaptured (const Vector3 &BHPosition, const Vector3 &particlePosition, float captureRadius);
 
-float orbitalSpeed(float mu, const float &radius);
+float orbitalSpeed(const float &mu, const float &radius);
 
-Vector3 orbitalTangent(Vector3 &BHPosition, Particle &particlePosition);
+Vector3 orbitalTangent(const Vector3 &BHPosition, const Vector3 &particlePosition);
+
+Vector3 circularVelocity(const Vector3 &BHPosition, const Vector3 &particlePosition, const float &mu, const float &radius);
 
 #endif //PARTICLESIM_PHYSICS_H
