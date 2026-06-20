@@ -25,3 +25,24 @@ std::vector<Vector3> makeUnitCircle(const float &radius) {
 
     return vertices;
 }
+
+std::vector<std::vector<Vector3>> makeGrid(int slices) {
+    std:: vector<Vector3> vertices;
+    std:: vector<Vector3> indices;
+
+    for (int row = 0; row <= slices; row++) {
+        for (int col = 0; col <= slices; col++) {
+
+            float x = static_cast<float>(row) / static_cast<float>(slices) * H;
+            float y = static_cast<float>(col) / static_cast<float>(slices) * W;
+
+            vertices.emplace_back(x, y, 0);
+        }
+    }
+
+    for (int row = 0; row <= slices; row++) {
+        for (int col = 0; col <= slices; col++) {
+            
+        }
+    }
+}

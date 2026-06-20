@@ -11,4 +11,6 @@
 
 std:: vector<Vector3> makeUnitCircle(const float &radius);
 
+std:: vector<std::vector<Vector3>> makeGrid(int slices);
+
 #endif //PARTICLESIM_RENDERER_H
