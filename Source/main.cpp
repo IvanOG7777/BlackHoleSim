@@ -106,92 +106,16 @@ int main() {
     particleVertices = makeUnitCircle(particle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
 
-    // int slices = 15;
-    // std:: vector<Vector3> vertices;
-    // std:: vector<Vector3> indices;
-    //
-    // for (size_t row = 0; row <= slices; row++) {
-    //     for (size_t col = 0; col <= slices; col++) {
-    //
-    //         float x = static_cast<float>(row) / static_cast<float>(slices) * H;
-    //         float y = static_cast<float>(col) / static_cast<float>(slices) * W;
-    //         GLfloat z = 0;
-    //
-    //         Vector3 newVec3(x,y,z);
-    //         vertices.push_back(newVec3);
-    //     }
-    // }
-    //
-    // for (size_t row = 0; row <= slices; row++) {
-    //     for (size_t col = 0; col <= slices; col++) {
-    //         GLuint bottomLeft = row * (slices + 1) + col;
-    //         GLuint bottomRight = row * (slices + 1) + col + 1;
-    //         GLuint topLeft = (row + 1) * (slices + 1) + col;
-    //         GLuint topRight = (row + 1) * (slices + 1) + col + 1;
-    //
-    //         indices.emplace_back(bottomLeft, bottomRight, topLeft);
-    //         indices.emplace_back(bottomRight, topRight, topLeft);
-    //     }
-    // }
 
-    GLuint VAO = 0, BHVAO = 0;
-    GLuint VBO = 0, BHVBO = 0;
+    GLuint VAO = 0, BHVAO = 0, trailVAO = 0;
+    GLuint VBO = 0, BHVBO = 0, trailVBO = 0;
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER,particleVertices.size() * sizeof(Vector3), particleVertices.data(),GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    glGenVertexArrays(1, &BHVAO);
-    glGenBuffers(1, &BHVBO);
-
-    glBindVertexArray(BHVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, BHVBO);
-    glBufferData(GL_ARRAY_BUFFER,BHVertices.size() * sizeof(Vector3), BHVertices.data(),GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
+    setVAO(VAO, VBO, GL_STATIC_DRAW, particleVertices);
+    setVAO(BHVAO, BHVBO, GL_STATIC_DRAW, BHVertices);
 
     bool hasCaptured = false;
     std:: vector<Vector3> positions;
-    Vector3 pos1(10,1,0);
-    Vector3 pos2(11,2,0);
-    Vector3 pos3(12,3,0);
-    Vector3 pos4(13,4,0);
-    Vector3 pos5(14,5,0);
-    Vector3 pos6(15,6,0);
-    Vector3 pos7(16,7,0);
-    Vector3 pos8(17,8,0);
-    Vector3 pos9(18,9,0);
-    Vector3 pos10(19,10,0);
-
-    recordTrail(positions, pos1);
-    recordTrail(positions, pos2);
-    recordTrail(positions, pos3);
-    recordTrail(positions, pos4);
-    recordTrail(positions, pos5);
-    recordTrail(positions, pos6);
-    recordTrail(positions, pos7);
-
-    for (auto pos : positions) {
-        std:: cout << pos;
-    }
-
-    return 0;
+    positions.emplace_back(particle.getPosition());
 
 
     auto startTime = std::chrono::high_resolution_clock::now();
@@ -206,7 +130,11 @@ int main() {
 
         Vector3 acceleration = gravitationalAcceleration(BH.getPosition(), particle.getPosition(), MU);
         particle.setAcceleration(acceleration);
+
         particle.update(dt);
+
+        recordTrail(positions, particle.getPosition());
+
         hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
         if (hasCaptured == true) {
             particle.setVelocity({});
@@ -214,8 +142,8 @@ int main() {
             particle.setPosition(900, 360, 0);
         }
 
-        auto currentOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
-        std:: cout << currentOrbitalRadius << std:: endl;
+        // auto currentOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
+        // std:: cout << currentOrbitalRadius << std:: endl;
 
         glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT);

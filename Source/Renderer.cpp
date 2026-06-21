@@ -70,6 +70,22 @@ void recordTrail(std::vector<Vector3> &trailPositions, const Vector3 &particlePo
     trailPositions.emplace_back(particlePosition); // keep placing until 100
 }
 
-void drawTrail(std::vector<Vector3> &trailPositions) {
+void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawType, std::vector<Vector3> &vector3s) {
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vector3s.size() * sizeof(Vector3), vector3s.data(), drawType);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+}
+
+void drawTrail(std::vector<Vector3> &positions, GLuint &VAO) {
 
 }
