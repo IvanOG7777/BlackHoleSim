@@ -29,6 +29,7 @@ std::vector<Vector3> makeUnitCircle(const float &radius) {
 }
 
 std::vector<std::vector<Vector3>> makeGrid(int slices) {
+    std:: vector<std::vector<Vector3>> coordinates;
     std:: vector<Vector3> vertices;
     std:: vector<Vector3> indices;
 
@@ -49,8 +50,26 @@ std::vector<std::vector<Vector3>> makeGrid(int slices) {
             GLuint topLeft = (row + 1) * (slices + 1) + col;
             GLuint topRight = (row + 1) * (slices + 1) + col + 1;
 
-            Vector3 tri1(bottomLeft, bottomRight, topLeft);
-            Vector3 tri2()
+            indices.emplace_back(bottomLeft, bottomRight, topLeft);
+            indices.emplace_back(bottomRight, topRight, topLeft);
         }
     }
+
+    coordinates.emplace_back(vertices);
+    coordinates.emplace_back(indices);
+
+    return coordinates;
+}
+
+void recordTrail(std::vector<Vector3> &trailPositions, const Vector3 &particlePosition) {
+    if (trailPositions.size() >= 100) { // if size is greater than 100 position
+        trailPositions.erase(trailPositions.begin()); // delete stale position
+        trailPositions.emplace_back(particlePosition); // place in newest positon
+        return;
+    }
+    trailPositions.emplace_back(particlePosition); // keep placing until 100
+}
+
+void drawTrail(std::vector<Vector3> &trailPositions) {
+
 }

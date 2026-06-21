@@ -167,6 +167,32 @@ int main() {
 
 
     bool hasCaptured = false;
+    std:: vector<Vector3> positions;
+    Vector3 pos1(10,1,0);
+    Vector3 pos2(11,2,0);
+    Vector3 pos3(12,3,0);
+    Vector3 pos4(13,4,0);
+    Vector3 pos5(14,5,0);
+    Vector3 pos6(15,6,0);
+    Vector3 pos7(16,7,0);
+    Vector3 pos8(17,8,0);
+    Vector3 pos9(18,9,0);
+    Vector3 pos10(19,10,0);
+
+    recordTrail(positions, pos1);
+    recordTrail(positions, pos2);
+    recordTrail(positions, pos3);
+    recordTrail(positions, pos4);
+    recordTrail(positions, pos5);
+    recordTrail(positions, pos6);
+    recordTrail(positions, pos7);
+
+    for (auto pos : positions) {
+        std:: cout << pos;
+    }
+
+    return 0;
+
 
     auto startTime = std::chrono::high_resolution_clock::now();
     while (!glfwWindowShouldClose(window)) {
