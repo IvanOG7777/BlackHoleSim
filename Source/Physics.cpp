@@ -88,6 +88,7 @@ Vector3 orbitalTangent(const Vector3 &BHPosition, const Vector3 &particlePositio
 
 Vector3 circularVelocity(const Vector3& BHPosition, const Vector3& particlePosition, const float &mu, const float &radius) {
     float speed = orbitalSpeed(mu, radius);
+    std:: cout << speed << "\n";
     Vector3 tangent = orbitalTangent(BHPosition, particlePosition);
 
     Vector3 velocity = tangent * speed;

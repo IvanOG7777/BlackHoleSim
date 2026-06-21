@@ -38,6 +38,25 @@ const char *fragmentShader = R"GLSL(
         }
     )GLSL";
 
+void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods) {
+
+    if (key == GLFW_KEY_SPACE) {
+        switch (action) {
+            case GLFW_PRESS:
+                std:: cout << "Key is being pressed" << std:: endl;
+                break;
+            case GLFW_REPEAT:
+                std:: cout << "Key is being held" << std:: endl;
+                break;
+            case GLFW_RELEASE:
+                std:: cout << "Key has been released" << std:: endl;
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -54,6 +73,8 @@ int main() {
         glfwTerminate();
         return -1;
     }
+
+    glfwSetKeyCallback(window, keyCallBack);
 
     glfwMakeContextCurrent(window);
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
@@ -85,18 +106,18 @@ int main() {
     Particle particle;
     Particle BH;
 
-    BH.setPosition(640, 360, 0);
+    BH.setPosition(960, 540, 0);
     BH.setRadius(25);
     BH.setMass(100);
 
-    particle.setPosition(900, 360, 0);
-    particle.setDamping(.90f);
+    particle.setPosition(1260, 540, 0);
+    particle.setDamping(1.0f);
     particle.setMass(5);
     particle.setRadius(10);
 
     float initOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
-
     Vector3 velocity = circularVelocity(BH.getPosition(), particle.getPosition(), MU, initOrbitalRadius);
+    velocity = velocity * VELOCITY_MULTIPLAYER;
 
     particle.setVelocity(velocity);
 
@@ -112,9 +133,9 @@ int main() {
     GLuint VAO = 0, BHVAO = 0, trailVAO = 0;
     GLuint VBO = 0, BHVBO = 0, trailVBO = 0;
 
-    setVAO(VAO, VBO, GL_STATIC_DRAW, particleVertices);
-    setVAO(BHVAO, BHVBO, GL_STATIC_DRAW, BHVertices);
-    setVAO(trailVAO, trailVBO, GL_STATIC_DRAW, trailPositions);
+    setVAO(VAO, VBO, GL_DYNAMIC_DRAW, particleVertices);
+    setVAO(BHVAO, BHVBO, GL_DYNAMIC_DRAW, BHVertices);
+    setVAO(trailVAO, trailVBO, GL_DYNAMIC_DRAW, trailPositions);
 
     bool hasCaptured = false;
 
@@ -143,8 +164,19 @@ int main() {
         //     particle.setPosition(900, 360, 0);
         // }
 
-        // auto currentOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
-        // std:: cout << currentOrbitalRadius << std:: endl;
+        int oneKey = glfwGetKey(window, GLFW_KEY_1);
+        int twoKey = glfwGetKey(window, GLFW_KEY_2);
+        int threeKey = glfwGetKey(window, GLFW_KEY_3);
+        int fourKey = glfwGetKey(window, GLFW_KEY_4);
+        int fiveKey = glfwGetKey(window, GLFW_KEY_5);
+        int resetKey = glfwGetKey(window, GLFW_KEY_R);
+
+        if (resetKey == GLFW_PRESS) {
+            particle.setVelocity({});
+            particle.setAcceleration({});
+            particle.setPosition(1260, 540, 0);
+        }
+
 
         glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT);

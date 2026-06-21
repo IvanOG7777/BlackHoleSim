@@ -18,6 +18,6 @@ void recordTrail(std:: vector<Vector3> &positions, const Vector3 &particlePositi
 
 void drawTrail(std:: vector<Vector3> &positions,GLuint &VAO);
 
-void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawType, std::vector<Vector3> &vector3s);
+void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Vector3> &vector3s);
 
 #endif //PARTICLESIM_RENDERER_H

@@ -62,7 +62,7 @@ std::vector<std::vector<Vector3>> makeGrid(int slices) {
 }
 
 void recordTrail(std::vector<Vector3> &trailPositions, const Vector3 &particlePosition) {
-    if (trailPositions.size() >= 1000) { // if size is greater than 100 position
+    if (trailPositions.size() >= 5000) { // if size is greater than 100 position
         trailPositions.erase(trailPositions.begin()); // delete stale position
         trailPositions.emplace_back(particlePosition); // place in newest positon
         return;
@@ -70,14 +70,14 @@ void recordTrail(std::vector<Vector3> &trailPositions, const Vector3 &particlePo
     trailPositions.emplace_back(particlePosition); // keep placing until 100
 }
 
-void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawType, std::vector<Vector3> &vector3s) {
+void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Vector3> &vector3s) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vector3s.size() * sizeof(Vector3), vector3s.data(), drawType);
+    glBufferData(GL_ARRAY_BUFFER, vector3s.size() * sizeof(Vector3), vector3s.data(), drawHint);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void *)0);
     glEnableVertexAttribArray(0);
