@@ -62,7 +62,7 @@ std::vector<std::vector<Vector3>> makeGrid(int slices) {
 }
 
 void recordTrail(std::vector<Vector3> &trailPositions, const Vector3 &particlePosition) {
-    if (trailPositions.size() >= 100) { // if size is greater than 100 position
+    if (trailPositions.size() >= 1000) { // if size is greater than 100 position
         trailPositions.erase(trailPositions.begin()); // delete stale position
         trailPositions.emplace_back(particlePosition); // place in newest positon
         return;
