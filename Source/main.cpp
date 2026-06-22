@@ -171,7 +171,10 @@ int main() {
             Vector3 acc = gravitationalAcceleration(BH.getPosition(), particle.getPosition(), MU);
             particle.setAcceleration(acc);
             recordTrail(vectorParticleTrails[particleIndex], particle.getPosition());
+            particleIndex++;
         }
+
+        particleIndex = 0;
 
         hasCaptured = hasBeenCaptured(BH.getPosition(), defaultParticle.getPosition(), BH.getRadius());
         if (hasCaptured == true) {
