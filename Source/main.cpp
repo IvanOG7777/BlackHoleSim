@@ -9,6 +9,7 @@
 #include "../Header/Particle.h"
 #include "../Header/Renderer.h"
 #include "../Header/Physics.h"
+#include "../Header/Input.h"
 
 const char *vertexShader = R"GLSL(
         #version 330 core
@@ -36,50 +37,6 @@ const char *fragmentShader = R"GLSL(
             FragColor = vec4(uColor, 1.0); // pass in the RBG plus alpha
         }
     )GLSL";
-
-
-struct ParticleStates {
-    Particle *particle;
-    Particle *blackhole;
-};
-
-void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods) {
-    ParticleStates *state = (ParticleStates*)glfwGetWindowUserPointer(window);
-    if (key == GLFW_KEY_ESCAPE) {
-        glfwWindowShouldClose(window);
-        glfwDestroyWindow(window);
-        glfwTerminate();
-    }
-
-    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-        setParticle(*state->particle, *state->blackhole, 1.0f);
-    }
-
-    if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-        setParticle(*state->particle, *state->blackhole, 0.0f);
-    }
-
-    if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-        setParticle(*state->particle, *state->blackhole, 0.2f);
-    }
-
-    if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
-        setParticle(*state->particle, *state->blackhole, 0.5f);
-    }
-
-    if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
-        setParticle(*state->particle, *state->blackhole, 0.7f);
-    }
-
-    if (key == GLFW_KEY_5 && action == GLFW_PRESS) {
-        setParticle(*state->particle, *state->blackhole, 1.2f);
-    }
-
-    if (key == GLFW_KEY_6 && action == GLFW_PRESS) {
-        setParticle(*state->particle, *state->blackhole, 1.5f);
-    }
-
-}
 
 int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -125,7 +82,7 @@ int main() {
     GLuint uOffsetLoc = glGetUniformLocation(shaderProgram, "uOffset");
     GLuint uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
 
-    ParticleStates sceneState{};
+    SceneState sceneState{};
     Particle particle;
     Particle BH;
 
@@ -141,6 +98,7 @@ int main() {
 
     sceneState.particle = &particle;
     sceneState.blackhole = &BH;
+    sceneState.trailPositions = &trailPositions;
 
     glfwSetWindowUserPointer(window, &sceneState);
     glfwSetKeyCallback(window, keyCallBack);
@@ -173,12 +131,10 @@ int main() {
 
         recordTrail(trailPositions, particle.getPosition());
 
-        // hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
-        // if (hasCaptured == true) {
-        //     particle.setVelocity({});
-        //     particle.setAcceleration({});
-        //     particle.setPosition(900, 360, 0);
-        // }
+        hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
+        if (hasCaptured == true) {
+            setParticle(particle, BH, 1.0f);
+        }
 
 
         glfwGetFramebufferSize(window, &w, &h);
@@ -205,7 +161,7 @@ int main() {
         glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
         glUniform2f(uOffsetLoc, BH.getPosition().x, BH.getPosition().y);
         glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(BHVertices.size()));
+        glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(BHVertices.size()));
 
 
         glfwPollEvents();

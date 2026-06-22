@@ -15,6 +15,8 @@ add_executable(BlackHoleSim
         Header/Renderer.h
         Header/Physics.h
         Source/Physics.cpp
+        Header/Input.h
+        Source/Input.cpp
 )
 
 target_include_directories(BlackHoleSim PRIVATE
