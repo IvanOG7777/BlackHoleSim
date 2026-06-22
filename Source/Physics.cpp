@@ -122,3 +122,27 @@ void setParticle(Particle &particle, Particle &BH, const float &velocityMultipla
 
     particle.setVelocity(velocity);
 }
+
+float speed(const Vector3 &velocity) {
+    return velocity.magnitude();
+}
+
+float orbitalEnergy(const Vector3 &BHPosition, const Vector3 &particlePosition, const Vector3 &velocity, float mu) {
+    Vector3 radialDisplacement = BHPosition - particlePosition;
+
+    float radius = radialDisplacement.magnitude();
+
+    auto velSquared = velocity * velocity;
+
+    float energy = (0.5 * velSquared) - (mu / radius);
+
+    return energy;
+}
+
+float angularMomentum(const Vector3 &BHPosition, const Vector3 &particlePosition, const Vector3 &particleVelocity) {
+    Vector3 radialDisplacement = BHPosition - particlePosition;
+
+    auto momentum = (radialDisplacement.x * particleVelocity.y) - (radialDisplacement.y * particleVelocity.x);
+
+    return momentum;
+}

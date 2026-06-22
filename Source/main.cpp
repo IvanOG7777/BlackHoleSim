@@ -136,6 +136,13 @@ int main() {
         //     setParticle(particle, BH, 1.0f);
         // }
 
+        float particleSpeed = speed(particle.getVelocity());
+        float particleEnergy = orbitalEnergy(BH.getPosition(), particle.getPosition(), particle.getVelocity(), MU);
+        float particleMomentum = angularMomentum(BH.getPosition(), particle.getPosition(), particle.getVelocity());
+        // std:: cout << particleSpeed << std:: endl;
+        // std:: cout << particleEnergy << std:: endl;
+         std:: cout << particleMomentum << std:: endl;
+
 
         glfwGetFramebufferSize(window, &w, &h);
         glClear(GL_COLOR_BUFFER_BIT);
