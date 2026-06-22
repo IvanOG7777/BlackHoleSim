@@ -21,4 +21,6 @@ Vector3 circularVelocity(const Vector3 &BHPosition, const Vector3 &particlePosit
 
 float orbitalRadius(const Vector3 &BHPosition, const Vector3 &particlePosition);
 
+void setParticle(Particle &particle, Particle &BH, const float &velocityMultiplayer);
+
 #endif //PARTICLESIM_PHYSICS_H

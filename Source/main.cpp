@@ -4,7 +4,6 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
-#include <cmath>
 
 #include "../Header/Constants.h"
 #include "../Header/Particle.h"
@@ -38,23 +37,48 @@ const char *fragmentShader = R"GLSL(
         }
     )GLSL";
 
-void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods) {
 
-    if (key == GLFW_KEY_SPACE) {
-        switch (action) {
-            case GLFW_PRESS:
-                std:: cout << "Key is being pressed" << std:: endl;
-                break;
-            case GLFW_REPEAT:
-                std:: cout << "Key is being held" << std:: endl;
-                break;
-            case GLFW_RELEASE:
-                std:: cout << "Key has been released" << std:: endl;
-                break;
-            default:
-                break;
-        }
+struct ParticleStates {
+    Particle *particle;
+    Particle *blackhole;
+};
+
+void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    ParticleStates *state = (ParticleStates*)glfwGetWindowUserPointer(window);
+    if (key == GLFW_KEY_ESCAPE) {
+        glfwWindowShouldClose(window);
+        glfwDestroyWindow(window);
+        glfwTerminate();
     }
+
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+        setParticle(*state->particle, *state->blackhole, 1.0f);
+    }
+
+    if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
+        setParticle(*state->particle, *state->blackhole, 0.0f);
+    }
+
+    if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
+        setParticle(*state->particle, *state->blackhole, 0.2f);
+    }
+
+    if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
+        setParticle(*state->particle, *state->blackhole, 0.5f);
+    }
+
+    if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
+        setParticle(*state->particle, *state->blackhole, 0.7f);
+    }
+
+    if (key == GLFW_KEY_5 && action == GLFW_PRESS) {
+        setParticle(*state->particle, *state->blackhole, 1.2f);
+    }
+
+    if (key == GLFW_KEY_6 && action == GLFW_PRESS) {
+        setParticle(*state->particle, *state->blackhole, 1.5f);
+    }
+
 }
 
 int main() {
@@ -73,8 +97,6 @@ int main() {
         glfwTerminate();
         return -1;
     }
-
-    glfwSetKeyCallback(window, keyCallBack);
 
     glfwMakeContextCurrent(window);
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
@@ -103,23 +125,11 @@ int main() {
     GLuint uOffsetLoc = glGetUniformLocation(shaderProgram, "uOffset");
     GLuint uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
 
+    ParticleStates sceneState{};
     Particle particle;
     Particle BH;
 
-    BH.setPosition(960, 540, 0);
-    BH.setRadius(25);
-    BH.setMass(100);
-
-    particle.setPosition(1260, 540, 0);
-    particle.setDamping(1.0f);
-    particle.setMass(5);
-    particle.setRadius(10);
-
-    float initOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
-    Vector3 velocity = circularVelocity(BH.getPosition(), particle.getPosition(), MU, initOrbitalRadius);
-    velocity = velocity * VELOCITY_MULTIPLAYER;
-
-    particle.setVelocity(velocity);
+    setParticle(particle, BH, 1.0f);
 
     std:: vector<Vector3> particleVertices;
     std:: vector<Vector3> BHVertices;
@@ -128,6 +138,12 @@ int main() {
     particleVertices = makeUnitCircle(particle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
     trailPositions.emplace_back(particle.getPosition());
+
+    sceneState.particle = &particle;
+    sceneState.blackhole = &BH;
+
+    glfwSetWindowUserPointer(window, &sceneState);
+    glfwSetKeyCallback(window, keyCallBack);
 
 
     GLuint VAO = 0, BHVAO = 0, trailVAO = 0;
@@ -163,19 +179,6 @@ int main() {
         //     particle.setAcceleration({});
         //     particle.setPosition(900, 360, 0);
         // }
-
-        int oneKey = glfwGetKey(window, GLFW_KEY_1);
-        int twoKey = glfwGetKey(window, GLFW_KEY_2);
-        int threeKey = glfwGetKey(window, GLFW_KEY_3);
-        int fourKey = glfwGetKey(window, GLFW_KEY_4);
-        int fiveKey = glfwGetKey(window, GLFW_KEY_5);
-        int resetKey = glfwGetKey(window, GLFW_KEY_R);
-
-        if (resetKey == GLFW_PRESS) {
-            particle.setVelocity({});
-            particle.setAcceleration({});
-            particle.setPosition(1260, 540, 0);
-        }
 
 
         glfwGetFramebufferSize(window, &w, &h);

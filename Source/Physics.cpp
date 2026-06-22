@@ -103,3 +103,22 @@ float orbitalRadius(const Vector3& BHPosition, const Vector3& particlePosition) 
 
     return radius;
 }
+
+void setParticle(Particle &particle, Particle &BH, const float &velocityMultiplayer) {
+
+    BH.setPosition(960, 540, 0);
+    BH.setRadius(25);
+    BH.setMass(100);
+
+    particle.setPosition(1260, 540, 0);
+    particle.setDamping(1.0f);
+    particle.setMass(5);
+    particle.setRadius(10);
+
+    float initOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
+    Vector3 velocity = circularVelocity(BH.getPosition(), particle.getPosition(), MU, initOrbitalRadius);
+
+    velocity *= velocityMultiplayer;
+
+    particle.setVelocity(velocity);
+}
