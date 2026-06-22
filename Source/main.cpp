@@ -131,10 +131,10 @@ int main() {
 
         recordTrail(trailPositions, particle.getPosition());
 
-        hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
-        if (hasCaptured == true) {
-            setParticle(particle, BH, 1.0f);
-        }
+        // hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
+        // if (hasCaptured == true) {
+        //     setParticle(particle, BH, 1.0f);
+        // }
 
 
         glfwGetFramebufferSize(window, &w, &h);
@@ -149,13 +149,15 @@ int main() {
         glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(particleVertices.size()));
 
-        for (auto &vec3 : trailPositions) {
-            glBindVertexArray(trailVAO);
-            glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
-            glUniform2f(uOffsetLoc, vec3.x, vec3.y);
-            glUniform1f(uScaleLoc, 1.0f);
-            glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(trailPositions.size()));
-        }
+        glBindVertexArray(trailVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
+
+        glBufferData(GL_ARRAY_BUFFER, trailPositions.size() * sizeof(Vector3), trailPositions.data(), GL_DYNAMIC_DRAW);
+
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
+        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(trailPositions.size()));
 
         glBindVertexArray(BHVAO);
         glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
