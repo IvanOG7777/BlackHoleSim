@@ -89,7 +89,7 @@ Vector3 orbitalTangent(const Vector3 &BHPosition, const Vector3 &particlePositio
 
 Vector3 circularVelocity(const Vector3& BHPosition, const Vector3& particlePosition, const float &mu, const float &radius) {
     float speed = orbitalSpeed(mu, radius);
-    std:: cout << speed << "\n";
+    std:: cout << "Speed: " << speed << "\n";
     Vector3 tangent = orbitalTangent(BHPosition, particlePosition);
 
     Vector3 velocity = tangent * speed;
@@ -118,17 +118,14 @@ void setParticleOrbit(Particle &particle, Particle &BH, const float &velocityMul
     std::uniform_int_distribution<> posXDis(minPosX, maxPosX);
     std::uniform_int_distribution<> posYDis(minPosY, maxPosY);
     std::uniform_int_distribution<> radiusDis(minRadius, maxRadius);
+    float damp = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 
     float posX = posXDis(genPosX);
     float posY = posYDis(genPosY);
     float radius = radiusDis(genRadius);
 
-    BH.setPosition(960, 540, 0);
-    BH.setRadius(25);
-    BH.setMass(100);
-
     particle.setPosition(posX, posY, 0);
-    particle.setDamping(1.0f);
+    particle.setDamping(damp);
     particle.setMass(5);
     particle.setRadius(radius);
 

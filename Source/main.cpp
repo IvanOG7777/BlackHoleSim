@@ -85,15 +85,37 @@ int main() {
     SceneState sceneState{};
     Particle defaultParticle;
     Particle BH;
+    BH.setPosition(960, 540, 0);
+    BH.setRadius(25);
+    BH.setMass(100);
     std:: vector<Particle> particles;
     particles.reserve(10);
 
-    for (size_t i = 0; i < particles.size(); i++) {
+    for (size_t i = 0; i < 10; i++) {
         Particle particle;
-        particle.setRadius(static_cast<float>(i + 2));
+        setParticleOrbit(particle, BH, 1.0f);
+        particles.emplace_back(particle);
+    }
+
+    for (auto &particle : particles) {
+        particle.printPosition();
+        particle.printVelocity();
+        particle.printAcceleration();
+        std:: cout << "Damp: " << particle.getDamping() << std:: endl;
+        std:: cout << "Radius: " << particle.getRadius() << std:: endl;
+        std:: cout << std:: endl;
     }
 
     setParticleOrbit(defaultParticle, BH, 1.0f);
+
+    std:: vector<std::vector<Vector3>> vectorParticleVertices;
+    std:: vector<std::vector<Vector3>> vectorParticleTrails;
+    vectorParticleVertices.reserve(10);
+    vectorParticleTrails.reserve(10);
+    for (int i = 0; i < 10; i++) {
+        vectorParticleVertices[i] = makeUnitCircle(particles[i].getRadius());
+        vectorParticleTrails[i].emplace_back(particles[i].getPosition());
+    }
 
     std::vector<Vector3> particleVertices;
     std::vector<Vector3> BHVertices;
@@ -106,6 +128,7 @@ int main() {
     sceneState.particle = &defaultParticle;
     sceneState.blackhole = &BH;
     sceneState.trailPositions = &trailPositions;
+    sceneState.particles = &particles;
 
     glfwSetWindowUserPointer(window, &sceneState);
     glfwSetKeyCallback(window, keyCallBack);
@@ -146,10 +169,10 @@ int main() {
 
         recordTrail(trailPositions, defaultParticle.getPosition());
 
-        // hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
-        // if (hasCaptured == true) {
-        //     setParticle(particle, BH, 1.0f);.
-        // }
+        hasCaptured = hasBeenCaptured(BH.getPosition(), defaultParticle.getPosition(), BH.getRadius());
+        if (hasCaptured == true) {
+
+        }
 
         float particleRadius = orbitalRadius(BH.getPosition(), defaultParticle.getPosition());
         float particleSpeed = speed(defaultParticle.getVelocity());
