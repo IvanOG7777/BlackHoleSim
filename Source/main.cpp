@@ -83,20 +83,27 @@ int main() {
     GLuint uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
 
     SceneState sceneState{};
-    Particle particle;
+    Particle defaultParticle;
     Particle BH;
+    std:: vector<Particle> particles;
+    particles.reserve(10);
 
-    setParticle(particle, BH, 1.0f);
+    for (size_t i = 0; i < particles.size(); i++) {
+        Particle particle;
+        particle.setRadius(static_cast<float>(i + 2));
+    }
+
+    setParticleOrbit(defaultParticle, BH, 1.0f);
 
     std::vector<Vector3> particleVertices;
     std::vector<Vector3> BHVertices;
     std::vector<Vector3> trailPositions;
 
-    particleVertices = makeUnitCircle(particle.getRadius());
+    particleVertices = makeUnitCircle(defaultParticle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
-    trailPositions.emplace_back(particle.getPosition());
+    trailPositions.emplace_back(defaultParticle.getPosition());
 
-    sceneState.particle = &particle;
+    sceneState.particle = &defaultParticle;
     sceneState.blackhole = &BH;
     sceneState.trailPositions = &trailPositions;
 
@@ -131,23 +138,24 @@ int main() {
         if (accumulatedTime >= FIXED_DT) {
             accumulatedTime -= FIXED_DT;
             dt = FIXED_DT;
-            particle.update(dt);
+            defaultParticle.update(dt);
         }
-        Vector3 acceleration = gravitationalAcceleration(BH.getPosition(), particle.getPosition(), MU);
-        particle.setAcceleration(acceleration);
+        Vector3 acceleration = gravitationalAcceleration(BH.getPosition(), defaultParticle.getPosition(), MU);
+        defaultParticle.setAcceleration(acceleration);
 
 
-        recordTrail(trailPositions, particle.getPosition());
+        recordTrail(trailPositions, defaultParticle.getPosition());
 
         // hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
         // if (hasCaptured == true) {
         //     setParticle(particle, BH, 1.0f);.
         // }
 
-        float particleRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
-        float particleSpeed = speed(particle.getVelocity());
-        float particleEnergy = orbitalEnergy(BH.getPosition(), particle.getPosition(), particle.getVelocity(), MU);
-        float particleMomentum = angularMomentum(BH.getPosition(), particle.getPosition(), particle.getVelocity());
+        float particleRadius = orbitalRadius(BH.getPosition(), defaultParticle.getPosition());
+        float particleSpeed = speed(defaultParticle.getVelocity());
+        float particleEnergy = orbitalEnergy(BH.getPosition(), defaultParticle.getPosition(), defaultParticle.getVelocity(), MU);
+        float particleMomentum = angularMomentum(BH.getPosition(), defaultParticle.getPosition(), defaultParticle.getVelocity());
+        std:: string particleOrbitType = orbitType(particleEnergy);
 
         if (diagnosticAccumulatedTime >= DIAGNOSTIC_TIME) {
             diagnosticAccumulatedTime -= DIAGNOSTIC_TIME;
@@ -155,6 +163,7 @@ int main() {
             std:: cout << "Speed: " << particleSpeed << "\n";
             std:: cout << "Energy: " << particleEnergy << "\n";
             std:: cout << "Momentum: " << particleMomentum << "\n";
+            std:: cout << "Orbit: " << particleOrbitType << "\n";
             std:: cout << "\n";
         }
 
@@ -167,7 +176,7 @@ int main() {
 
         glBindVertexArray(VAO);
         glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
-        glUniform2f(uOffsetLoc, particle.getPosition().x, particle.getPosition().y);
+        glUniform2f(uOffsetLoc, defaultParticle.getPosition().x, defaultParticle.getPosition().y);
         glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(particleVertices.size()));
 

@@ -2,6 +2,7 @@
 // Created by elder on 6/19/2026.
 //
 
+#include <random>
 #include "../Header/Physics.h"
 
 void keepInFrame(Particle &particle) {
@@ -104,16 +105,32 @@ float orbitalRadius(const Vector3& BHPosition, const Vector3& particlePosition) 
     return radius;
 }
 
-void setParticle(Particle &particle, Particle &BH, const float &velocityMultiplayer) {
+void setParticleOrbit(Particle &particle, Particle &BH, const float &velocityMultiplayer) {
+    float minPosX = 100.0f, maxPosX = 1820.0f;
+    float minPosY = 100.0f, maxPosY = 920.0f;
+    float minRadius = 5.0f, maxRadius = 15.0f;
+
+    std::random_device rd;
+    std::mt19937 genPosX(rd());
+    std::mt19937 genPosY(rd());
+    std::mt19937 genRadius(rd());
+
+    std::uniform_int_distribution<> posXDis(minPosX, maxPosX);
+    std::uniform_int_distribution<> posYDis(minPosY, maxPosY);
+    std::uniform_int_distribution<> radiusDis(minRadius, maxRadius);
+
+    float posX = posXDis(genPosX);
+    float posY = posYDis(genPosY);
+    float radius = radiusDis(genRadius);
 
     BH.setPosition(960, 540, 0);
     BH.setRadius(25);
     BH.setMass(100);
 
-    particle.setPosition(1260, 540, 0);
+    particle.setPosition(posX, posY, 0);
     particle.setDamping(1.0f);
     particle.setMass(5);
-    particle.setRadius(10);
+    particle.setRadius(radius);
 
     float initOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
     Vector3 velocity = circularVelocity(BH.getPosition(), particle.getPosition(), MU, initOrbitalRadius);
@@ -145,4 +162,14 @@ float angularMomentum(const Vector3 &BHPosition, const Vector3 &particlePosition
     auto momentum = (radialDisplacement.x * particleVelocity.y) - (radialDisplacement.y * particleVelocity.x);
 
     return momentum;
+}
+
+std::string orbitType(const float &particleEnergy) {
+    if (particleEnergy < 0) return "Bounded";
+
+    if (particleEnergy == 0) return "Escape Boundry";
+
+    if (particleEnergy > 0) return "Escape Trajectory";
+
+    return "Bad input";
 }

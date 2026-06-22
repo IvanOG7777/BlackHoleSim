@@ -21,12 +21,14 @@ Vector3 circularVelocity(const Vector3 &BHPosition, const Vector3 &particlePosit
 
 float orbitalRadius(const Vector3 &BHPosition, const Vector3 &particlePosition);
 
-void setParticle(Particle &particle, Particle &BH, const float &velocityMultiplayer);
+void setParticleOrbit(Particle &particle, Particle &BH, const float &velocityMultiplayer);
 
 float speed(const Vector3 &velocity);
 
 float orbitalEnergy(const Vector3 &BHPosition, const Vector3 &particlePosition, const Vector3 &velocity, float mu);
 
 float angularMomentum(const Vector3 &BHPosition, const Vector3 &particlePosition, const Vector3 &particleVelocity);
+
+std:: string orbitType(const float &particleEnergy);
 
 #endif //PARTICLESIM_PHYSICS_H

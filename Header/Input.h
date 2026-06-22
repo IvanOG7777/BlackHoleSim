@@ -15,6 +15,7 @@ struct SceneState {
     Particle *particle;
     Particle *blackhole;
     std::vector<Vector3> *trailPositions;
+    std:: vector<Particle> *particles;
 };
 
 void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods);
