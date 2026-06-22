@@ -88,9 +88,9 @@ int main() {
 
     setParticle(particle, BH, 1.0f);
 
-    std:: vector<Vector3> particleVertices;
-    std:: vector<Vector3> BHVertices;
-    std:: vector<Vector3> trailPositions;
+    std::vector<Vector3> particleVertices;
+    std::vector<Vector3> BHVertices;
+    std::vector<Vector3> trailPositions;
 
     particleVertices = makeUnitCircle(particle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
@@ -112,36 +112,51 @@ int main() {
     setVAO(trailVAO, trailVBO, GL_DYNAMIC_DRAW, trailPositions);
 
     bool hasCaptured = false;
-
+    float accumulatedTime = 0;
+    float diagnosticAccumulatedTime = 0;
 
     auto startTime = std::chrono::high_resolution_clock::now();
     while (!glfwWindowShouldClose(window)) {
         auto currentTime = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> deltaTime = currentTime - startTime;
         startTime = currentTime;
-        const auto dt = deltaTime.count();
+        auto dt = deltaTime.count();
+
+        accumulatedTime += dt;
+        diagnosticAccumulatedTime += dt;
 
         int w = W;
         int h = H;
 
+        if (accumulatedTime >= FIXED_DT) {
+            accumulatedTime -= FIXED_DT;
+            dt = FIXED_DT;
+            particle.update(dt);
+        }
         Vector3 acceleration = gravitationalAcceleration(BH.getPosition(), particle.getPosition(), MU);
         particle.setAcceleration(acceleration);
 
-        particle.update(dt);
 
         recordTrail(trailPositions, particle.getPosition());
 
         // hasCaptured = hasBeenCaptured(BH.getPosition(), particle.getPosition(), BH.getRadius());
         // if (hasCaptured == true) {
-        //     setParticle(particle, BH, 1.0f);
+        //     setParticle(particle, BH, 1.0f);.
         // }
 
+        float particleRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
         float particleSpeed = speed(particle.getVelocity());
         float particleEnergy = orbitalEnergy(BH.getPosition(), particle.getPosition(), particle.getVelocity(), MU);
         float particleMomentum = angularMomentum(BH.getPosition(), particle.getPosition(), particle.getVelocity());
-        // std:: cout << particleSpeed << std:: endl;
-        // std:: cout << particleEnergy << std:: endl;
-         std:: cout << particleMomentum << std:: endl;
+
+        if (diagnosticAccumulatedTime >= DIAGNOSTIC_TIME) {
+            diagnosticAccumulatedTime -= DIAGNOSTIC_TIME;
+            std:: cout << "Radius: " << particleRadius << "\n";
+            std:: cout << "Speed: " << particleSpeed << "\n";
+            std:: cout << "Energy: " << particleEnergy << "\n";
+            std:: cout << "Momentum: " << particleMomentum << "\n";
+            std:: cout << "\n";
+        }
 
 
         glfwGetFramebufferSize(window, &w, &h);
