@@ -125,7 +125,7 @@ void setParticleOrbit(Particle &particle, Particle &BH, const float &velocityMul
     float radius = radiusDis(genRadius);
 
     particle.setPosition(posX, posY, 0);
-    particle.setDamping(damp);
+    particle.setDamping(.999f);
     particle.setMass(5);
     particle.setRadius(radius);
 
