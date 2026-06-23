@@ -86,15 +86,14 @@ int main() {
     SceneState sceneState{};
     Particle defaultParticle;
     Blackhole BH;
+
     BH.setMU(MU);
     BH.setCaptureRadius();
     BH.setPhotonSphere();
-    std:: cout << "Capture radius of Black hole is: " << BH.getCaptureRadius() << std:: endl;
-    std:: cout << "Photon sphere of black hole is: " << BH.getPhotonSphere() << std:: endl;
-    std:: cout << "Event horizon of black hole is: " << BH.getEventHorizon() << std:: endl;
     BH.setPosition(960, 540, 0);
     BH.setRadius(25);
     BH.setMass(100);
+
     std:: vector<Particle> particles;
     particles.reserve(10);
 
