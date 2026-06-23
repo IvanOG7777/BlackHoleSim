@@ -95,11 +95,11 @@ int main() {
     BH.setMass(100);
 
     std:: vector<Particle> particles;
-    particles.reserve(10);
+    particles.reserve(1000);
 
-    for (size_t i = 0; i < 10; i++) {
+    for (size_t i = 0; i < 1000; i++) {
         Particle particle;
-        setParticleOrbit(particle, BH, 1.0f);
+        setDisk(BH, particle);
         particles.emplace_back(particle);
     }
 
@@ -107,15 +107,12 @@ int main() {
         particle.printPosition();
         particle.printVelocity();
         particle.printAcceleration();
-        std:: cout << "Damp: " << particle.getDamping() << std:: endl;
-        std:: cout << "Radius: " << particle.getRadius() << std:: endl;
-        std:: cout << std:: endl;
     }
 
-    setParticleOrbit(defaultParticle, BH, 1.0f);
+    setDisk(BH, defaultParticle);
 
-    std:: vector<std::vector<Vector3>> vectorParticleTrails(10);
-    for (int i = 0; i < 10; i++) {
+    std:: vector<std::vector<Vector3>> vectorParticleTrails(1000);
+    for (int i = 0; i < 1000; i++) {
         vectorParticleTrails[i].emplace_back(particles[i].getPosition());
     }
 

@@ -148,7 +148,7 @@ float orbitalEnergy(const Vector3 &BHPosition, const Vector3 &particlePosition, 
 
     auto velSquared = velocity * velocity;
 
-    float energy = (0.5 * velSquared) - (mu / radius);
+    float energy = (0.5f * velSquared) - (mu / radius);
 
     return energy;
 }
@@ -169,4 +169,38 @@ std::string orbitType(const float &particleEnergy) {
     if (particleEnergy > 0) return "Escape Trajectory";
 
     return "Bad input";
+}
+
+void setDisk(Blackhole &blackhole, Particle &particle) {
+    float innerRadius = blackhole.getPhotonSphere();
+    float outerRadius = innerRadius + 50.0f;
+    float angle1 = 0.0f;
+    float angle2 = 2*PI;
+
+    float bhX = blackhole.getPosition().x;
+    float bhY = blackhole.getPosition().y;
+
+    std::random_device rd;
+    std::mt19937 genRadius(rd());
+    std::mt19937 genAngle(rd());
+
+
+    std::uniform_real_distribution<> radiusDis(innerRadius, outerRadius);
+    std::uniform_real_distribution<> angleDis(angle1, angle2);
+
+    float randRadius = radiusDis(genRadius);
+    float randAngle = angleDis(genAngle);
+
+    float theta = randAngle * 2.0f * PI;
+    float x = bhX + (randRadius * std::cosf(theta));
+    float y = bhY + (randRadius * std::sinf(theta));
+
+    particle.setPosition(x, y, 0);
+    particle.setMass(5);
+    particle.setRadius(1);
+    particle.setDamping(1);
+
+    Vector3 velocity = circularVelocity(blackhole.getPosition(), particle.getPosition(), blackhole.getMU(), blackhole.getPhotonSphere());
+
+    particle.setVelocity(velocity);
 }

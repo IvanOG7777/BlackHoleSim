@@ -5,6 +5,7 @@
 #ifndef PARTICLESIM_PHYSICS_H
 #define PARTICLESIM_PHYSICS_H
 
+#include "Blackhole.h"
 #include "Particle.h"
 #include "Constants.h"
 void keepInFrame(Particle &particle);
@@ -30,5 +31,7 @@ float orbitalEnergy(const Vector3 &BHPosition, const Vector3 &particlePosition, 
 float angularMomentum(const Vector3 &BHPosition, const Vector3 &particlePosition, const Vector3 &particleVelocity);
 
 std:: string orbitType(const float &particleEnergy);
+
+void setDisk(Blackhole &blackhole, Particle &particle);
 
 #endif //PARTICLESIM_PHYSICS_H
