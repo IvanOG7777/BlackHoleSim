@@ -88,6 +88,7 @@ int main() {
     Blackhole BH;
     BH.setMU(MU);
     BH.setCaptureRadius();
+    BH.setPhotonSphere();
     std:: cout << "Capture radius of Black hole is: " << BH.getCaptureRadius() << std:: endl;
     std:: cout << "Photon sphere of black hole is: " << BH.getPhotonSphere() << std:: endl;
     std:: cout << "Event horizon of black hole is: " << BH.getEventHorizon() << std:: endl;
@@ -122,11 +123,13 @@ int main() {
     std::vector<Vector3> defaultParticleVertices;
     std::vector<Vector3> BHVertices;
     std::vector<Vector3> captureRadiusVertices;
+    std:: vector<Vector3> photonSphereVertices;
     std::vector<Vector3> defaultTrailPositions;
 
     defaultParticleVertices = makeUnitCircle(defaultParticle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
     captureRadiusVertices = makeUnitCircle(BH.getCaptureRadius());
+    photonSphereVertices = makeUnitCircle(BH.getPhotonSphere());
     defaultTrailPositions.emplace_back(defaultParticle.getPosition());
 
     sceneState.particle = &defaultParticle;
@@ -138,11 +141,13 @@ int main() {
     glfwSetKeyCallback(window, keyCallBack);
 
 
-    GLuint VAO = 0, BHVAO = 0, trailVAO = 0;
-    GLuint VBO = 0, BHVBO = 0, trailVBO = 0;
+    GLuint VAO = 0, BHVAO = 0, captureVAO = 0, photonSphereVAO = 0, trailVAO = 0;
+    GLuint VBO = 0, BHVBO = 0, captureVBO = 0, photonSphereVBO = 0, trailVBO = 0;
 
     setVAO(VAO, VBO, GL_DYNAMIC_DRAW, defaultParticleVertices);
     setVAO(BHVAO, BHVBO, GL_DYNAMIC_DRAW, BHVertices);
+    setVAO(captureVAO, captureVBO, GL_DYNAMIC_DRAW, captureRadiusVertices);
+    setVAO(photonSphereVAO, photonSphereVBO, GL_DYNAMIC_DRAW, photonSphereVertices);
     setVAO(trailVAO, trailVBO, GL_DYNAMIC_DRAW, defaultTrailPositions);
 
     bool hasCaptured = false;
@@ -250,17 +255,23 @@ int main() {
             particleIndex++;
         }
 
+        glBindVertexArray(captureVAO);
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform2f(uOffsetLoc, bhPosition.x, bhPosition.y);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(captureRadiusVertices.size()));
+
+        glBindVertexArray(photonSphereVAO);
+        glUniform3f(uColorLoc, 1.0f, 0.5f, 1.0f);
+        glUniform2f(uOffsetLoc, bhPosition.x, bhPosition.y);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(photonSphereVertices.size()));
+
         glBindVertexArray(BHVAO);
         glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
         glUniform2f(uOffsetLoc, bhPosition.x, bhPosition.y);
         glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(BHVertices.size()));
-
-        glBindVertexArray(BHVAO);
-        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-        glUniform2f(uOffsetLoc, bhPosition.x, bhPosition.y);
-        glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(captureRadiusVertices.size()));
+        glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(BHVertices.size()));
 
 
         glfwPollEvents();
