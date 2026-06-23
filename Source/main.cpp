@@ -5,6 +5,7 @@
 #include <chrono>
 #include <vector>
 
+#include "../Header/Blackhole.h"
 #include "../Header/Constants.h"
 #include "../Header/Particle.h"
 #include "../Header/Renderer.h"
@@ -84,7 +85,12 @@ int main() {
 
     SceneState sceneState{};
     Particle defaultParticle;
-    Particle BH;
+    Blackhole BH;
+    BH.setMU(MU);
+    BH.setCaptureRadius();
+    std:: cout << "Capture radius of Black hole is: " << BH.getCaptureRadius() << std:: endl;
+    std:: cout << "Photon sphere of black hole is: " << BH.getPhotonSphere() << std:: endl;
+    std:: cout << "Event horizon of black hole is: " << BH.getEventHorizon() << std:: endl;
     BH.setPosition(960, 540, 0);
     BH.setRadius(25);
     BH.setMass(100);
@@ -115,10 +121,12 @@ int main() {
 
     std::vector<Vector3> defaultParticleVertices;
     std::vector<Vector3> BHVertices;
+    std::vector<Vector3> captureRadiusVertices;
     std::vector<Vector3> defaultTrailPositions;
 
     defaultParticleVertices = makeUnitCircle(defaultParticle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
+    captureRadiusVertices = makeUnitCircle(BH.getCaptureRadius());
     defaultTrailPositions.emplace_back(defaultParticle.getPosition());
 
     sceneState.particle = &defaultParticle;
@@ -154,6 +162,8 @@ int main() {
         int w = W;
         int h = H;
         int particleIndex = 0;
+        float bhMU = BH.getMU();
+        auto bhPosition = BH.getPosition();
 
         if (accumulatedTime >= FIXED_DT) {
             accumulatedTime -= FIXED_DT;
@@ -163,12 +173,12 @@ int main() {
                 particle.update(dt);
             }
         }
-        Vector3 acceleration = gravitationalAcceleration(BH.getPosition(), defaultParticle.getPosition(), MU);
+        Vector3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
         recordTrail(defaultTrailPositions, defaultParticle.getPosition());
 
         for (auto &particle : particles) {
-            Vector3 acc = gravitationalAcceleration(BH.getPosition(), particle.getPosition(), MU);
+            Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
             particle.setAcceleration(acc);
             recordTrail(vectorParticleTrails[particleIndex], particle.getPosition());
             particleIndex++;
@@ -176,15 +186,15 @@ int main() {
 
         particleIndex = 0;
 
-        hasCaptured = hasBeenCaptured(BH.getPosition(), defaultParticle.getPosition(), BH.getRadius());
+        hasCaptured = hasBeenCaptured(bhPosition, defaultParticle.getPosition(), BH.getCaptureRadius());
         if (hasCaptured == true) {
 
         }
 
-        float particleRadius = orbitalRadius(BH.getPosition(), defaultParticle.getPosition());
+        float particleRadius = orbitalRadius(bhPosition, defaultParticle.getPosition());
         float particleSpeed = speed(defaultParticle.getVelocity());
-        float particleEnergy = orbitalEnergy(BH.getPosition(), defaultParticle.getPosition(), defaultParticle.getVelocity(), MU);
-        float particleMomentum = angularMomentum(BH.getPosition(), defaultParticle.getPosition(), defaultParticle.getVelocity());
+        float particleEnergy = orbitalEnergy(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity(), bhMU);
+        float particleMomentum = angularMomentum(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity());
         std:: string particleOrbitType = orbitType(particleEnergy);
 
         if (diagnosticAccumulatedTime >= DIAGNOSTIC_TIME) {
@@ -242,9 +252,15 @@ int main() {
 
         glBindVertexArray(BHVAO);
         glUniform3f(uColorLoc, 1.0f, 0.0f, 0.0f);
-        glUniform2f(uOffsetLoc, BH.getPosition().x, BH.getPosition().y);
+        glUniform2f(uOffsetLoc, bhPosition.x, bhPosition.y);
         glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(BHVertices.size()));
+
+        glBindVertexArray(BHVAO);
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform2f(uOffsetLoc, bhPosition.x, bhPosition.y);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(captureRadiusVertices.size()));
 
 
         glfwPollEvents();

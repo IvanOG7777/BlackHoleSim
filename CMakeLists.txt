@@ -17,6 +17,8 @@ add_executable(BlackHoleSim
         Source/Physics.cpp
         Header/Input.h
         Source/Input.cpp
+        Header/Blackhole.h
+        Source/Blackhole.cpp
 )
 
 target_include_directories(BlackHoleSim PRIVATE

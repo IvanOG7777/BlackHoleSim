@@ -14,5 +14,6 @@ const float MU = 100000.0f;
 constexpr float VELOCITY_MULTIPLAYER = 0.7f;
 constexpr float FIXED_DT = 1.0f / 120.0f;
 constexpr float DIAGNOSTIC_TIME = 100.0f / 60.0f;
+constexpr float SPEED_OF_LIGHT = 63.2455f;
 
 #endif //PARTICLESIM_CONSTANTS_H
