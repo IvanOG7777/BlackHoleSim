@@ -178,12 +178,12 @@ int main() {
         defaultParticle.setAcceleration(acceleration);
         recordTrail(defaultTrailPositions, defaultParticle.getPosition());
 
-        for (auto &particle : particles) {
-            Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
-            particle.setAcceleration(acc);
-            recordTrail(vectorParticleTrails[particleIndex], particle.getPosition());
-            particleIndex++;
-        }
+        // for (auto &particle : particles) {
+        //     Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
+        //     particle.setAcceleration(acc);
+        //     recordTrail(vectorParticleTrails[particleIndex], particle.getPosition());
+        //     particleIndex++;
+        // }
 
         particleIndex = 0;
 
@@ -226,30 +226,47 @@ int main() {
 
         glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Vector3), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
 
-        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
-
-        for (auto &particle : particles) {
-            glBindVertexArray(VAO);
-            glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
-            glUniform2f(uOffsetLoc, particle.getPosition().x, particle.getPosition().y);
+        int trailVertsIndex = 0;
+        if (particleSpeed >= 0.0f && particleSpeed <= 50.0f) {
+            glUniform3f(uColorLoc, 0.0f, 0.1f, 1.0f);
+            glUniform2f(uOffsetLoc, defaultTrailPositions[trailVertsIndex].x, defaultTrailPositions[trailVertsIndex].y);
             glUniform1f(uScaleLoc, 1.0f);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(defaultParticleVertices.size()));
-
-            glBindVertexArray(trailVAO);
-            glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-
-            glBufferData(GL_ARRAY_BUFFER, vectorParticleTrails[particleIndex].size() * sizeof(Vector3), vectorParticleTrails[particleIndex].data(), GL_DYNAMIC_DRAW);
-
-            glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
+            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+        } else if (particleSpeed >= 51.0f && particleSpeed <= 100.0f) {
+            glUniform3f(uColorLoc, 0.80f, 0.27f, 0.01f);
             glUniform2f(uOffsetLoc, 0.0f, 0.0f);
             glUniform1f(uScaleLoc, 1.0f);
-            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(vectorParticleTrails[particleIndex].size()));
-
-            particleIndex++;
+            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+        } else {
+            glUniform3f(uColorLoc, 1.0f, 0.1f, 0.0f);
+            glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+            glUniform1f(uScaleLoc, 1.0f);
+            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
         }
+        // glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        // glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        // glUniform1f(uScaleLoc, 1.0f);
+        // glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+
+        // for (auto &particle : particles) {
+        //     glBindVertexArray(VAO);
+        //     glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
+        //     glUniform2f(uOffsetLoc, particle.getPosition().x, particle.getPosition().y);
+        //     glUniform1f(uScaleLoc, 1.0f);
+        //     glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(defaultParticleVertices.size()));
+        //
+        //     glBindVertexArray(trailVAO);
+        //     glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
+        //
+        //     glBufferData(GL_ARRAY_BUFFER, vectorParticleTrails[particleIndex].size() * sizeof(Vector3), vectorParticleTrails[particleIndex].data(), GL_DYNAMIC_DRAW);
+        //
+        //     glUniform3f(uColorLoc, 0.45f, 0.090f, 0.0f);
+        //     glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        //     glUniform1f(uScaleLoc, 1.0f);
+        //     glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(vectorParticleTrails[particleIndex].size()));
+        //
+        //     particleIndex++;
+        // }
 
         glBindVertexArray(captureVAO);
         glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);

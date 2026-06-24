@@ -62,7 +62,7 @@ std::vector<std::vector<Vector3>> makeGrid(int slices) {
 }
 
 void recordTrail(std::vector<Vector3> &trailPositions, const Vector3 &particlePosition) {
-    if (trailPositions.size() >= 5000) { // if size is greater than 100 position
+    if (trailPositions.size() >= 1000) { // if size is greater than 100 position
         trailPositions.erase(trailPositions.begin()); // delete stale position
         trailPositions.emplace_back(particlePosition); // place in newest positon
         return;
@@ -84,8 +84,4 @@ void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Vector3> &vec
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-}
-
-void drawTrail(std::vector<Vector3> &positions, GLuint &VAO) {
-
 }
