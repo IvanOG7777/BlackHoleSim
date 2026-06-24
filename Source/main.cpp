@@ -42,11 +42,13 @@ const char *fragmentShader = R"GLSL(
 const char *trailVertexShader = R"GLSL(
         #version 330 core
         layout(location = 0) in vec3 aPos; // Current vertex we are handling from the vector of vertices
-        layout(location = 1) in vec3 trailColor;
+        layout(location = 1) in vec3 trailColor; // input a vec3 color
 
         uniform vec2 uResolution; //holds screen W/H
         uniform vec2 uOffset; // current position of the particle
         uniform float uScale; //  particles radius
+
+        out vec3 colorToFragment; // send out a vec3Color
 
         void main() {
             vec2 worldPos = aPos.xy * uScale + uOffset; // only use the xy values of the vertices, scale it and add the current position to get real new position
@@ -55,15 +57,17 @@ const char *trailVertexShader = R"GLSL(
             ndc = ndc * 2.0 - 1.0; // convert from normalized range to normalized device coordinates [-1,1]
 
             gl_Position = vec4(ndc.x, ndc.y, 0.0, 1.0); // Final position in clip space (OpenGL expects vec4 in NDC range)
+
+            colorToFragment = trailColor; // assign so fragment can see
         }
     )GLSL";
 
 const char *trailFragmentShader = R"GLSL(
         #version 330 core
-        out vec4 TrailColor;
-        uniform vec3 uColor;
+        in colorToFragment; // color coming in from trailVertex
+        out vec4 TrailColor; // Final color to output
         void main() {
-            TrailColor = vec4(uColor, 1.0);
+            TrailColor = vec4(colorToFragment, 1.0); // set the trail vertex and alpah
         }
     )GLSL";
 
@@ -123,6 +127,10 @@ int main() {
     GLuint uColorLoc = glGetUniformLocation(shaderProgram, "uColor");
     GLuint uOffsetLoc = glGetUniformLocation(shaderProgram, "uOffset");
     GLuint uScaleLoc = glGetUniformLocation(shaderProgram, "uScale");
+
+    GLuint tResolutionLoc = glGetUniformLocation(trailShaderProgram, "uResolution");
+    GLuint tOffsetLoc = glGetUniformLocation(trailShaderProgram, "uOffset");
+    GLuint tScaleLoc = glGetUniformLocation(trailShaderProgram, "uScale");
 
     SceneState sceneState{};
     Particle defaultParticle;
@@ -212,12 +220,13 @@ int main() {
             accumulatedTime -= FIXED_DT;
             dt = FIXED_DT;
             defaultParticle.update(dt);
-            for (auto &particle : particles) {
-                particle.update(dt);
-            }
+            // for (auto &particle : particles) {
+            //     particle.update(dt);
+            // }
         }
         Vector3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
+        defaultParticle.setTrail(defaultParticle.getPosition(), {1.0f, 1.0f, 1.0f});
         recordTrail(defaultTrailPositions, defaultParticle.getTrail());
 
         // for (auto &particle : particles) {
@@ -263,16 +272,6 @@ int main() {
         glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(defaultParticleVertices.size()));
 
-        glBindVertexArray(trailVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-
-        glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
-
-        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        glUniform1f(uScaleLoc, 1.0f);
-        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
-
         // for (auto &particle : particles) {
         //     glBindVertexArray(VAO);
         //     glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
@@ -310,6 +309,18 @@ int main() {
         glUniform2f(uOffsetLoc, bhPosition.x, bhPosition.y);
         glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(BHVertices.size()));
+
+        glUseProgram(trailShaderProgram);
+        glUniform2f(tResolutionLoc, W, H);
+
+        glBindVertexArray(trailVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
+
+        glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
+
+        glUniform2f(tOffsetLoc, 0.0f, 0.0f);
+        glUniform1f(tScaleLoc, 1.0f);
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
 
 
         glfwPollEvents();

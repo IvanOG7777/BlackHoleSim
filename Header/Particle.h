@@ -92,7 +92,7 @@ public:
 
     void update(float deltaTime);
 
-    void setTrail(ParticleTrail &particleTrail);
+    void setTrail(const Vector3 &passedPosition, const Vector3 &passedColor);
 
     const ParticleTrail &getTrail();
 };

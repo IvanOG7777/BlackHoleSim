@@ -176,7 +176,10 @@ void Particle::update(float deltaTime) {
     integrate(deltaTime);
 }
 
-void Particle::setTrail(ParticleTrail &particleTrail) {
+void Particle::setTrail(const Vector3 &passedPosition, const Vector3 &passedColor) {
+    ParticleTrail particleTrail;
+    particleTrail.position = passedPosition;
+    particleTrail.color = passedColor;
     trail = particleTrail;
 }
 
