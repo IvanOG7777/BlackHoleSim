@@ -15,6 +15,7 @@
 const char *vertexShader = R"GLSL(
         #version 330 core
         layout(location = 0) in vec3 aPos; // Current vertex we are handling from the vector of vertices
+        layout(location = 1) in vec3 trailColor;
 
         uniform vec2 uResolution; //holds screen W/H
         uniform vec2 uOffset; // current position of the particle
@@ -120,13 +121,14 @@ int main() {
     std::vector<Vector3> BHVertices;
     std::vector<Vector3> captureRadiusVertices;
     std:: vector<Vector3> photonSphereVertices;
-    std::vector<Vector3> defaultTrailPositions;
+    std::vector<Particle::ParticleTrail> defaultTrailPositions;
 
     defaultParticleVertices = makeUnitCircle(defaultParticle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
     captureRadiusVertices = makeUnitCircle(BH.getCaptureRadius());
     photonSphereVertices = makeUnitCircle(BH.getPhotonSphere());
-    defaultTrailPositions.emplace_back(defaultParticle.getPosition());
+
+    defaultTrailPositions.emplace_back(defaultParticle.getTrail());
 
     sceneState.particle = &defaultParticle;
     sceneState.blackhole = &BH;
@@ -144,7 +146,7 @@ int main() {
     setVAO(BHVAO, BHVBO, GL_DYNAMIC_DRAW, BHVertices);
     setVAO(captureVAO, captureVBO, GL_DYNAMIC_DRAW, captureRadiusVertices);
     setVAO(photonSphereVAO, photonSphereVBO, GL_DYNAMIC_DRAW, photonSphereVertices);
-    setVAO(trailVAO, trailVBO, GL_DYNAMIC_DRAW, defaultTrailPositions);
+    setTrailVao(trailVAO, trailVBO, GL_DYNAMIC_DRAW, defaultTrailPositions);
 
     bool hasCaptured = false;
     float accumulatedTime = 0;
@@ -176,7 +178,7 @@ int main() {
         }
         Vector3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
-        recordTrail(defaultTrailPositions, defaultParticle.getPosition());
+        // recordTrail(defaultTrailPositions, defaultParticle.getPosition());
 
         // for (auto &particle : particles) {
         //     Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
@@ -224,29 +226,12 @@ int main() {
         glBindVertexArray(trailVAO);
         glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
 
-        glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Vector3), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
 
-        int trailVertsIndex = 0;
-        if (particleSpeed >= 0.0f && particleSpeed <= 50.0f) {
-            glUniform3f(uColorLoc, 0.0f, 0.1f, 1.0f);
-            glUniform2f(uOffsetLoc, defaultTrailPositions[trailVertsIndex].x, defaultTrailPositions[trailVertsIndex].y);
-            glUniform1f(uScaleLoc, 1.0f);
-            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
-        } else if (particleSpeed >= 51.0f && particleSpeed <= 100.0f) {
-            glUniform3f(uColorLoc, 0.80f, 0.27f, 0.01f);
-            glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-            glUniform1f(uScaleLoc, 1.0f);
-            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
-        } else {
-            glUniform3f(uColorLoc, 1.0f, 0.1f, 0.0f);
-            glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-            glUniform1f(uScaleLoc, 1.0f);
-            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
-        }
-        // glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
-        // glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        // glUniform1f(uScaleLoc, 1.0f);
-        // glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform2f(uOffsetLoc, 0.0f, 0.0f);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
 
         // for (auto &particle : particles) {
         //     glBindVertexArray(VAO);

@@ -14,7 +14,7 @@
 struct SceneState {
     Particle *particle;
     Particle *blackhole;
-    std::vector<Vector3> *trailPositions;
+    std::vector<Particle::ParticleTrail> *trailPositions;
     std:: vector<Particle> *particles;
 };
 

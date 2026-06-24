@@ -6,7 +6,7 @@
 #define PARTICLESIM_RENDERER_H
 
 #include <vector>
-#include "Core.h"
+#include "Particle.h"
 #include "../Header/Constants.h"
 #include "glad/glad.h"
 
@@ -17,5 +17,7 @@ std:: vector<std::vector<Vector3>> makeGrid(int slices);
 void recordTrail(std:: vector<Vector3> &positions, const Vector3 &particlePosition);
 
 void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Vector3> &vector3s);
+
+void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std:: vector<Particle::ParticleTrail> &trails);
 
 #endif //PARTICLESIM_RENDERER_H

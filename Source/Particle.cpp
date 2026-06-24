@@ -18,6 +18,11 @@ Particle::Particle() {
     radius = 0.0f;
 }
 
+Particle::ParticleTrail::ParticleTrail() {
+    position = {};
+    color = {};
+}
+
 void Particle::integrate(float duration) {
     if (inverseMass <= 0.0f) return;
 
@@ -169,4 +174,12 @@ void Particle::clearAllValues() {
 
 void Particle::update(float deltaTime) {
     integrate(deltaTime);
+}
+
+void Particle::setTrail(ParticleTrail &particleTrail) {
+    trail = particleTrail;
+}
+
+const Particle::ParticleTrail &Particle::getTrail() {
+    return trail;
 }
