@@ -14,7 +14,7 @@ std:: vector<Vector3> makeUnitCircle(const float &radius);
 
 std:: vector<std::vector<Vector3>> makeGrid(int slices);
 
-void recordTrail(std:: vector<Vector3> &positions, const Vector3 &particlePosition);
+void recordTrail(std:: vector<Particle::ParticleTrail> &positions, const Particle::ParticleTrail &particlePosition);
 
 void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Vector3> &vector3s);
 

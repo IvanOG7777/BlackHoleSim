@@ -20,7 +20,7 @@ Particle::Particle() {
 
 Particle::ParticleTrail::ParticleTrail() {
     position = {};
-    color = {};
+    color = {1.0f, 1.0f, 1.0f};
 }
 
 void Particle::integrate(float duration) {

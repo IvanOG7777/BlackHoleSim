@@ -61,7 +61,7 @@ std::vector<std::vector<Vector3>> makeGrid(int slices) {
     return coordinates;
 }
 
-void recordTrail(std::vector<Vector3> &trailPositions, const Vector3 &particlePosition) {
+void recordTrail(std::vector<Particle::ParticleTrail> &trailPositions, const Particle::ParticleTrail &particlePosition) {
     if (trailPositions.size() >= 1000) { // if size is greater than 100 position
         trailPositions.erase(trailPositions.begin()); // delete stale position
         trailPositions.emplace_back(particlePosition); // place in newest positon
@@ -98,6 +98,7 @@ void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Particle
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle::ParticleTrail), (void *)0); //position
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle::ParticleTrail), (void *)offsetof(Particle::ParticleTrail, color)); //color // skip over pos(16 bytes) to get to color Vector3 within ParticleTrail struct
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);

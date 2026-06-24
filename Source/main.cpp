@@ -15,7 +15,6 @@
 const char *vertexShader = R"GLSL(
         #version 330 core
         layout(location = 0) in vec3 aPos; // Current vertex we are handling from the vector of vertices
-        layout(location = 1) in vec3 trailColor;
 
         uniform vec2 uResolution; //holds screen W/H
         uniform vec2 uOffset; // current position of the particle
@@ -37,6 +36,34 @@ const char *fragmentShader = R"GLSL(
         uniform vec3 uColor; // RGB
         void main() {
             FragColor = vec4(uColor, 1.0); // pass in the RBG plus alpha
+        }
+    )GLSL";
+
+const char *trailVertexShader = R"GLSL(
+        #version 330 core
+        layout(location = 0) in vec3 aPos; // Current vertex we are handling from the vector of vertices
+        layout(location = 1) in vec3 trailColor;
+
+        uniform vec2 uResolution; //holds screen W/H
+        uniform vec2 uOffset; // current position of the particle
+        uniform float uScale; //  particles radius
+
+        void main() {
+            vec2 worldPos = aPos.xy * uScale + uOffset; // only use the xy values of the vertices, scale it and add the current position to get real new position
+
+            vec2 ndc = worldPos / uResolution; // convert from pixel coordinated to normalized range [0,1]
+            ndc = ndc * 2.0 - 1.0; // convert from normalized range to normalized device coordinates [-1,1]
+
+            gl_Position = vec4(ndc.x, ndc.y, 0.0, 1.0); // Final position in clip space (OpenGL expects vec4 in NDC range)
+        }
+    )GLSL";
+
+const char *trailFragmentShader = R"GLSL(
+        #version 330 core
+        out vec4 TrailColor;
+        uniform vec3 uColor;
+        void main() {
+            TrailColor = vec4(uColor, 1.0);
         }
     )GLSL";
 
@@ -66,18 +93,31 @@ int main() {
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertexShader, nullptr);
     glCompileShader(vs);
-
     GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fs, 1, &fragmentShader, nullptr);
     glCompileShader(fs);
+
+    GLuint trailVS = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(trailVS, 1, &trailVertexShader, nullptr);
+    glCompileShader(trailVS);
+    GLuint trailFS = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(trailFS, 1, &trailFragmentShader, nullptr);
+    glCompileShader(trailFS);
 
     GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vs);
     glAttachShader(shaderProgram, fs);
     glLinkProgram(shaderProgram);
 
+    GLuint trailShaderProgram = glCreateProgram();
+    glAttachShader(trailShaderProgram, trailVS);
+    glAttachShader(trailShaderProgram, trailFS);
+    glLinkProgram(trailShaderProgram);
+
     glDeleteShader(vs);
     glDeleteShader(fs);
+    glDeleteShader(trailVS);
+    glDeleteShader(trailFS);
 
     GLuint uResolutionLoc = glGetUniformLocation(shaderProgram, "uResolution");
     GLuint uColorLoc = glGetUniformLocation(shaderProgram, "uColor");
@@ -178,7 +218,7 @@ int main() {
         }
         Vector3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
-        // recordTrail(defaultTrailPositions, defaultParticle.getPosition());
+        recordTrail(defaultTrailPositions, defaultParticle.getTrail());
 
         // for (auto &particle : particles) {
         //     Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
