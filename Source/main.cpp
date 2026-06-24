@@ -64,7 +64,7 @@ const char *trailVertexShader = R"GLSL(
 
 const char *trailFragmentShader = R"GLSL(
         #version 330 core
-        in colorToFragment; // color coming in from trailVertex
+        in vec3 colorToFragment; // color coming in from trailVertex
         out vec4 TrailColor; // Final color to output
         void main() {
             TrailColor = vec4(colorToFragment, 1.0); // set the trail vertex and alpah
@@ -175,8 +175,6 @@ int main() {
     BHVertices = makeUnitCircle(BH.getRadius());
     captureRadiusVertices = makeUnitCircle(BH.getCaptureRadius());
     photonSphereVertices = makeUnitCircle(BH.getPhotonSphere());
-
-    defaultTrailPositions.emplace_back(defaultParticle.getTrail());
 
     sceneState.particle = &defaultParticle;
     sceneState.blackhole = &BH;
@@ -320,7 +318,7 @@ int main() {
 
         glUniform2f(tOffsetLoc, 0.0f, 0.0f);
         glUniform1f(tScaleLoc, 1.0f);
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
 
 
         glfwPollEvents();
