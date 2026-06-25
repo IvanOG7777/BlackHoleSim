@@ -90,7 +90,7 @@ int main() {
     BH.setRadius(25);
     BH.setMass(100);
 
-    std:: vector<Particle> particles;
+    std::vector<Particle> particles;
     particles.reserve(1000);
 
     for (size_t i = 0; i < 1000; i++) {
@@ -99,7 +99,7 @@ int main() {
         particles.emplace_back(particle);
     }
 
-    for (auto &particle : particles) {
+    for (auto &particle: particles) {
         particle.printPosition();
         particle.printVelocity();
         particle.printAcceleration();
@@ -107,15 +107,12 @@ int main() {
 
     setDisk(BH, defaultParticle);
 
-    std:: vector<std::vector<Vector3>> vectorParticleTrails(1000);
-    for (int i = 0; i < 1000; i++) {
-        vectorParticleTrails[i].emplace_back(particles[i].getPosition());
-    }
+    std::vector<std::vector<Particle::ParticleTrail> > vectorParticleTrails(1000);
 
     std::vector<Vector3> defaultParticleVertices;
     std::vector<Vector3> BHVertices;
     std::vector<Vector3> captureRadiusVertices;
-    std:: vector<Vector3> photonSphereVertices;
+    std::vector<Vector3> photonSphereVertices;
     std::vector<Particle::ParticleTrail> defaultTrailPositions;
 
     defaultParticleVertices = makeUnitCircle(defaultParticle.getRadius());
@@ -165,50 +162,67 @@ int main() {
             accumulatedTime -= FIXED_DT;
             dt = FIXED_DT;
             defaultParticle.update(dt);
-            // for (auto &particle : particles) {
-            //     particle.update(dt);
-            // }
+            for (auto &particle: particles) {
+                particle.update(dt);
+            }
         }
 
         float particleRadius = orbitalRadius(bhPosition, defaultParticle.getPosition());
         float particleSpeed = speed(defaultParticle.getVelocity());
-        float particleEnergy = orbitalEnergy(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity(), bhMU);
-        float particleMomentum = angularMomentum(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity());
-        std:: string particleOrbitType = orbitType(particleEnergy);
+        float particleEnergy = orbitalEnergy(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity(),
+                                             bhMU);
+        float particleMomentum = angularMomentum(bhPosition, defaultParticle.getPosition(),
+                                                 defaultParticle.getVelocity());
+        std::string particleOrbitType = orbitType(particleEnergy);
 
         Vector3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
-        if (particleSpeed >= 0.0f && particleSpeed <= 14.0f) {
-            defaultParticle.setTrail(defaultParticle.getPosition(), {0.0f, 0.0f, 1.0f});
-        } else if (particleSpeed >= 14.0f && particleSpeed <= 20.0f) {
-            defaultParticle.setTrail(defaultParticle.getPosition(), {0.45f, 0.0f, 1.0f});
+        if (particleSpeed >= 0.0f && particleSpeed <= 10.0f) {
+            defaultParticle.setTrail(defaultParticle.getPosition(), {0.0f, 0.2f, 1.0f});
+        } else if (particleSpeed >= 10.0f && particleSpeed <= 16.0f) {
+            defaultParticle.setTrail(defaultParticle.getPosition(), {0.0, 0.8, 1.0});
+        } else if (particleSpeed >= 16.0f && particleSpeed <= 22.0f) {
+            defaultParticle.setTrail(defaultParticle.getPosition(), {1.0, 0.55, 0.0});
+        } else if (particleSpeed >= 22.0f && particleSpeed <= 30.0f) {
+            defaultParticle.setTrail(defaultParticle.getPosition(), {1.0, 0.22, 0.0});
         } else {
-            defaultParticle.setTrail(defaultParticle.getPosition(), {1.0f, 0.0f, 0.0f});
+            defaultParticle.setTrail(defaultParticle.getPosition(), {1.0, 0.0, 0.0});
         }
         recordTrail(defaultTrailPositions, defaultParticle.getTrail());
 
-        // for (auto &particle : particles) {
-        //     Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
-        //     particle.setAcceleration(acc);
-        //     recordTrail(vectorParticleTrails[particleIndex], particle.getPosition());
-        //     particleIndex++;
-        // }
-
         particleIndex = 0;
-
-        hasCaptured = hasBeenCaptured(bhPosition, defaultParticle.getPosition(), BH.getCaptureRadius());
-        if (hasCaptured == true) {
-
+        for (auto &particle: particles) {
+            Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
+            particle.setAcceleration(acc);
+            particleSpeed = speed(particle.getVelocity());
+            if (particleSpeed >= 0.0f && particleSpeed <= 10.0f) {
+                particle.setTrail(particle.getPosition(), {0.0f, 0.2f, 1.0f});
+            } else if (particleSpeed >= 10.0f && particleSpeed <= 16.0f) {
+                particle.setTrail(particle.getPosition(), {0.0, 0.8, 1.0});
+            } else if (particleSpeed >= 16.0f && particleSpeed <= 22.0f) {
+                particle.setTrail(particle.getPosition(), {1.0, 0.55, 0.0});
+            } else if (particleSpeed >= 22.0f && particleSpeed <= 30.0f) {
+                particle.setTrail(particle.getPosition(), {1.0, 0.22, 0.0});
+            } else {
+                particle.setTrail(particle.getPosition(), {1.0, 0.0, 0.0});
+            }
+            recordTrail(vectorParticleTrails[particleIndex], particle.getTrail());
+            particleIndex++;
         }
+
+        // hasCaptured = hasBeenCaptured(bhPosition, defaultParticle.getPosition(), BH.getCaptureRadius());
+        // if (hasCaptured == true) {
+        //
+        // }
 
         if (diagnosticAccumulatedTime >= DIAGNOSTIC_TIME) {
             diagnosticAccumulatedTime -= DIAGNOSTIC_TIME;
-            std:: cout << "Radius: " << particleRadius << "\n";
-            std:: cout << "Speed: " << particleSpeed << "\n";
-            std:: cout << "Energy: " << particleEnergy << "\n";
-            std:: cout << "Momentum: " << particleMomentum << "\n";
-            std:: cout << "Orbit: " << particleOrbitType << "\n";
-            std:: cout << "\n";
+            std::cout << "Radius: " << particleRadius << "\n";
+            std::cout << "Speed: " << particleSpeed << "\n";
+            std::cout << "Energy: " << particleEnergy << "\n";
+            std::cout << "Momentum: " << particleMomentum << "\n";
+            std::cout << "Orbit: " << particleOrbitType << "\n";
+            std::cout << "\n";
         }
 
 
@@ -223,26 +237,6 @@ int main() {
         glUniform2f(uOffsetLoc, defaultParticle.getPosition().x, defaultParticle.getPosition().y);
         glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(defaultParticleVertices.size()));
-
-        // for (auto &particle : particles) {
-        //     glBindVertexArray(VAO);
-        //     glUniform3f(uColorLoc, 1.0f, 1.0f, 0.0f);
-        //     glUniform2f(uOffsetLoc, particle.getPosition().x, particle.getPosition().y);
-        //     glUniform1f(uScaleLoc, 1.0f);
-        //     glDrawArrays(GL_TRIANGLE_FAN, 0, static_cast<GLsizei>(defaultParticleVertices.size()));
-        //
-        //     glBindVertexArray(trailVAO);
-        //     glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-        //
-        //     glBufferData(GL_ARRAY_BUFFER, vectorParticleTrails[particleIndex].size() * sizeof(Vector3), vectorParticleTrails[particleIndex].data(), GL_DYNAMIC_DRAW);
-        //
-        //     glUniform3f(uColorLoc, 0.45f, 0.090f, 0.0f);
-        //     glUniform2f(uOffsetLoc, 0.0f, 0.0f);
-        //     glUniform1f(uScaleLoc, 1.0f);
-        //     glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(vectorParticleTrails[particleIndex].size()));
-        //
-        //     particleIndex++;
-        // }
 
         glBindVertexArray(captureVAO);
         glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
@@ -262,6 +256,9 @@ int main() {
         glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(BHVertices.size()));
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         glUseProgram(trailShaderProgram);
         glUniform2f(tResolutionLoc, W, H);
 
@@ -273,6 +270,20 @@ int main() {
         glUniform2f(tOffsetLoc, 0.0f, 0.0f);
         glUniform1f(tScaleLoc, 1.0f);
         glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+
+        particleIndex = 0;
+        for (auto &particle : particles) {
+            glBindVertexArray(trailVAO);
+            glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
+
+            glBufferData(GL_ARRAY_BUFFER, vectorParticleTrails[particleIndex].size() * sizeof(Particle::ParticleTrail), vectorParticleTrails[particleIndex].data(), GL_DYNAMIC_DRAW);
+
+            glUniform2f(tOffsetLoc, 0.0f, 0.0f);
+            glUniform1f(tScaleLoc, 1.0f);
+            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(vectorParticleTrails[particleIndex].size()));
+
+            particleIndex++;
+        }
 
 
         glfwPollEvents();
