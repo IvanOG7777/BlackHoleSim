@@ -13,7 +13,7 @@ std::vector<Vector3> makeUnitCircle(const float &radius) {
     // vertices.emplace_back(0,0,0);
 
     for (int i = 0; i <= segments; i++) {
-        float progress = static_cast<float>(i) / segments;
+        float progress = static_cast<float>(i) / static_cast<float>(segments);
         float theta = progress * 2.0f * PI;
 
         Vector3 position;
@@ -58,7 +58,7 @@ std::vector<std::vector<Vector3>> makeGrid(int slices) {
     coordinates.emplace_back(vertices);
     coordinates.emplace_back(indices);
 
-    return coordinates;
+    return coordinates; // [0] for vertices, [1] for indices
 }
 
 void recordTrail(std::vector<Particle::ParticleTrail> &trailPositions, const Particle::ParticleTrail &particlePosition) {
@@ -103,6 +103,22 @@ void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Particle
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
+//
+// void setGridVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<std::vector<Vector3>> &gridVertices) {
+//     glGenVertexArrays(1, &VAO);
+//     glGenBuffers(1, &VBO);
+//
+//     glBindVertexArray(VAO);
+//
+//     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+//     glBufferData(GL_ARRAY_BUFFER, gridVertices.size() * sizeof(Vector3), gridVertices.data(), drawHint);
+//
+//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), (void *)0);
+//     glEnableVertexAttribArray(0);
+//
+//     glBindBuffer(GL_ARRAY_BUFFER, 0);
+//     glBindVertexArray(0);
+// }
 
 const char *makeVertexShader(const std::string &shaderType) {
     if (shaderType == "CircleVertex") {

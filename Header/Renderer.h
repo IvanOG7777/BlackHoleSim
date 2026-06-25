@@ -26,4 +26,6 @@ const char *makeFragmentShader(const std::string &shaderType);
 
 GLuint createShader(const char *shader, GLenum shaderType);
 
+// void setGridVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<std::vector<Vector3>> &gridVertices);
+
 #endif //PARTICLESIM_RENDERER_H

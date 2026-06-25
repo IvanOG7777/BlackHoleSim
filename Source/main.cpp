@@ -91,12 +91,6 @@ int main() {
         particles.emplace_back(particle);
     }
 
-    for (auto &particle: particles) {
-        particle.printPosition();
-        particle.printVelocity();
-        particle.printAcceleration();
-    }
-
     setDisk(BH, defaultParticle);
 
     std::vector<std::vector<Particle::ParticleTrail> > vectorParticleTrails(1000);
@@ -105,12 +99,20 @@ int main() {
     std::vector<Vector3> BHVertices;
     std::vector<Vector3> captureRadiusVertices;
     std::vector<Vector3> photonSphereVertices;
+    std::vector<std::vector<Vector3>> gridVertices;
     std::vector<Particle::ParticleTrail> defaultTrailPositions;
 
     defaultParticleVertices = makeUnitCircle(defaultParticle.getRadius());
     BHVertices = makeUnitCircle(BH.getRadius());
     captureRadiusVertices = makeUnitCircle(BH.getCaptureRadius());
     photonSphereVertices = makeUnitCircle(BH.getPhotonSphere());
+    gridVertices = makeGrid(16);
+
+    std:: cout << BHVertices.size() << std:: endl;
+    std:: cout << sizeof(Vector3) << std:: endl;
+    std:: cout << BHVertices.size() * sizeof(Vector3) << std:: endl;
+    std:: cout << BHVertices.data() << std:: endl;
+    std:: cout << &BHVertices[0] << std:: endl;
 
     sceneState.particle = &defaultParticle;
     sceneState.blackhole = &BH;
@@ -121,13 +123,15 @@ int main() {
     glfwSetKeyCallback(window, keyCallBack);
 
 
-    GLuint VAO = 0, BHVAO = 0, captureVAO = 0, photonSphereVAO = 0, trailVAO = 0;
-    GLuint VBO = 0, BHVBO = 0, captureVBO = 0, photonSphereVBO = 0, trailVBO = 0;
+    GLuint VAO = 0, BHVAO = 0, captureVAO = 0, photonSphereVAO = 0, trailVAO = 0, gridVertVAO = 0, gridIndexVAO = 0;
+    GLuint VBO = 0, BHVBO = 0, captureVBO = 0, photonSphereVBO = 0, trailVBO = 0, gridVertVBO = 0, gridIndexVBO = 0;
 
     setVAO(VAO, VBO, GL_DYNAMIC_DRAW, defaultParticleVertices);
     setVAO(BHVAO, BHVBO, GL_DYNAMIC_DRAW, BHVertices);
     setVAO(captureVAO, captureVBO, GL_DYNAMIC_DRAW, captureRadiusVertices);
     setVAO(photonSphereVAO, photonSphereVBO, GL_DYNAMIC_DRAW, photonSphereVertices);
+    setVAO(gridVertVAO, gridVertVBO, GL_DYNAMIC_DRAW, gridVertices[0]);
+    setVAO(gridIndexVAO, gridIndexVBO, GL_DYNAMIC_DRAW, gridVertices[1]);
     setTrailVao(trailVAO, trailVBO, GL_DYNAMIC_DRAW, defaultTrailPositions);
 
     bool hasCaptured = false;
@@ -223,6 +227,18 @@ int main() {
 
         glUseProgram(shaderProgram);
         glUniform2f(uResolutionLoc, W, H);
+
+        // glBindVertexArray(gridVertVAO);
+        // glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        // glUniform2f(uOffsetLoc, 0, 0);
+        // glUniform1f(uScaleLoc, 1.0f);
+        // glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(gridVertices[0].size()));
+
+        glBindVertexArray(gridIndexVAO);
+        glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform2f(uOffsetLoc, 0, 0);
+        glUniform1f(uScaleLoc, 1.0f);
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(gridVertices[1].size()));
 
         glBindVertexArray(VAO);
         glUniform3f(uColorLoc, 1.0f, 1.0f, 1.0f);
