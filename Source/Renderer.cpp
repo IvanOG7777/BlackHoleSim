@@ -28,37 +28,40 @@ std::vector<Vector3> makeUnitCircle(const float &radius) {
     return vertices;
 }
 
-std::vector<std::vector<Vector3>> makeGrid(int slices) {
-    std:: vector<std::vector<Vector3>> coordinates;
-    std:: vector<Vector3> vertices;
-    std:: vector<Vector3> indices;
+std::vector<Vector3> makeGrid(int slices) {
+    std:: vector<Vector3> points;
+    std:: vector<Vector3> triangles;
 
     for (int row = 0; row <= slices; row++) {
         for (int col = 0; col <= slices; col++) {
 
-            float x = static_cast<float>(row) / static_cast<float>(slices) * H;
-            float y = static_cast<float>(col) / static_cast<float>(slices) * W;
+            float x = static_cast<float>(row) / static_cast<float>(slices) * W;
+            float y = static_cast<float>(col) / static_cast<float>(slices) * H;
 
-            vertices.emplace_back(x, y, 0);
+            points.emplace_back(x, y, 0);
         }
     }
 
-    for (int row = 0; row <= slices; row++) {
-        for (int col = 0; col <= slices; col++) {
+    for (int row = 0; row < slices; row++) {
+        for (int col = 0; col < slices; col++) {
             GLuint bottomLeft = row * (slices + 1) + col;
             GLuint bottomRight = row * (slices + 1) + col + 1;
             GLuint topLeft = (row + 1) * (slices + 1) + col;
             GLuint topRight = (row + 1) * (slices + 1) + col + 1;
 
-            indices.emplace_back(bottomLeft, bottomRight, topLeft);
-            indices.emplace_back(bottomRight, topRight, topLeft);
+            //triangle one
+            triangles.emplace_back(points[bottomLeft]);
+            triangles.emplace_back(points[topLeft]);
+            triangles.emplace_back(points[bottomRight]);
+
+            //triangle 2
+            triangles.emplace_back(points[bottomLeft]);
+            triangles.emplace_back(points[bottomRight]);
+            triangles.emplace_back(points[topRight]);
         }
     }
 
-    coordinates.emplace_back(vertices);
-    coordinates.emplace_back(indices);
-
-    return coordinates; // [0] for vertices, [1] for indices
+    return triangles;
 }
 
 void recordTrail(std::vector<Particle::ParticleTrail> &trailPositions, const Particle::ParticleTrail &particlePosition) {

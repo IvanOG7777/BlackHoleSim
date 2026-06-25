@@ -12,7 +12,7 @@
 
 std::vector<Vector3> makeUnitCircle(const float &radius);
 
-std::vector<std::vector<Vector3> > makeGrid(int slices);
+std::vector<Vector3> makeGrid(int slices);
 
 void recordTrail(std::vector<Particle::ParticleTrail> &positions, const Particle::ParticleTrail &particlePosition);
 
