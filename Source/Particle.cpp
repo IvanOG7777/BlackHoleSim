@@ -183,6 +183,24 @@ void Particle::setTrail(const Vector3 &passedPosition, const Vector3 &passedColo
     trail = particleTrail;
 }
 
+void Particle::setTrailColor(const float &particleSpeed) {
+    if (particleSpeed >= 0.0f && particleSpeed <= 10.0f) {
+        setTrail(position, {0.0f, 0.2f, 1.0f});
+    } else if (particleSpeed >= 10.0f && particleSpeed <= 16.0f) {
+        setTrail(position, {0.0, 0.8, 1.0});
+    } else if (particleSpeed >= 16.0f && particleSpeed <= 22.0f) {
+        setTrail(position, {1.0, 0.55, 0.0});
+    } else if (particleSpeed >= 22.0f && particleSpeed <= 30.0f) {
+        setTrail(position, {1.0, 0.22, 0.0});
+    } else {
+        setTrail(position, {1.0, 0.0, 0.0});
+    }
+}
+
+void clearTrail() {
+
+}
+
 const Particle::ParticleTrail &Particle::getTrail() {
     return trail;
 }

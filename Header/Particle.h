@@ -94,6 +94,10 @@ public:
 
     void setTrail(const Vector3 &passedPosition, const Vector3 &passedColor);
 
+    void setTrailColor(const float &particleSpeed);
+
+    void clearTrail();
+
     const ParticleTrail &getTrail();
 };
 

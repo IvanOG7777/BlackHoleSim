@@ -83,9 +83,9 @@ int main() {
     BH.setMass(100);
 
     std::vector<Particle> particles;
-    particles.reserve(1000);
+    particles.reserve(2000);
 
-    for (size_t i = 0; i < 1000; i++) {
+    for (size_t i = 0; i < 2000; i++) {
         Particle particle;
         setDisk(BH, particle);
         particles.emplace_back(particle);
@@ -93,7 +93,7 @@ int main() {
 
     setDisk(BH, defaultParticle);
 
-    std::vector<std::vector<Particle::ParticleTrail> > vectorParticleTrails(1000);
+    std::vector<std::vector<Particle::ParticleTrail> > vectorParticleTrails(2000);
 
     std::vector<Vector3> defaultParticleVertices;
     std::vector<Vector3> BHVertices;
@@ -164,43 +164,37 @@ int main() {
 
         Vector3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
-        if (particleSpeed >= 0.0f && particleSpeed <= 10.0f) {
-            defaultParticle.setTrail(defaultParticle.getPosition(), {0.0f, 0.2f, 1.0f});
-        } else if (particleSpeed >= 10.0f && particleSpeed <= 16.0f) {
-            defaultParticle.setTrail(defaultParticle.getPosition(), {0.0, 0.8, 1.0});
-        } else if (particleSpeed >= 16.0f && particleSpeed <= 22.0f) {
-            defaultParticle.setTrail(defaultParticle.getPosition(), {1.0, 0.55, 0.0});
-        } else if (particleSpeed >= 22.0f && particleSpeed <= 30.0f) {
-            defaultParticle.setTrail(defaultParticle.getPosition(), {1.0, 0.22, 0.0});
-        } else {
-            defaultParticle.setTrail(defaultParticle.getPosition(), {1.0, 0.0, 0.0});
-        }
+        defaultParticle.setTrailColor(particleSpeed);
+
         recordTrail(defaultTrailPositions, defaultParticle.getTrail());
 
         particleIndex = 0;
         for (auto &particle: particles) {
             Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
             particle.setAcceleration(acc);
+
             particleSpeed = speed(particle.getVelocity());
-            if (particleSpeed >= 0.0f && particleSpeed <= 10.0f) {
-                particle.setTrail(particle.getPosition(), {0.0f, 0.2f, 1.0f});
-            } else if (particleSpeed >= 10.0f && particleSpeed <= 16.0f) {
-                particle.setTrail(particle.getPosition(), {0.0, 0.8, 1.0});
-            } else if (particleSpeed >= 16.0f && particleSpeed <= 22.0f) {
-                particle.setTrail(particle.getPosition(), {1.0, 0.55, 0.0});
-            } else if (particleSpeed >= 22.0f && particleSpeed <= 30.0f) {
-                particle.setTrail(particle.getPosition(), {1.0, 0.22, 0.0});
-            } else {
-                particle.setTrail(particle.getPosition(), {1.0, 0.0, 0.0});
-            }
+            particle.setTrailColor(particleSpeed);
+
             recordTrail(vectorParticleTrails[particleIndex], particle.getTrail());
             particleIndex++;
         }
 
-        // hasCaptured = hasBeenCaptured(bhPosition, defaultParticle.getPosition(), BH.getCaptureRadius());
-        // if (hasCaptured == true) {
-        //
-        // }
+        hasCaptured = hasBeenCaptured(bhPosition, defaultParticle.getPosition(), BH.getCaptureRadius());
+        if (hasCaptured == true) {
+            defaultTrailPositions.clear();
+            setDisk(BH, defaultParticle);
+        }
+
+        particleIndex = 0;
+        for (auto &particle : particles) {
+            hasCaptured = hasBeenCaptured(bhPosition, particle.getPosition(), BH.getCaptureRadius());
+            if (hasCaptured == true) {
+                vectorParticleTrails[particleIndex].clear();
+                setDisk(BH, particle);
+            }
+            particleIndex++;
+        }
 
         if (diagnosticAccumulatedTime >= DIAGNOSTIC_TIME) {
             diagnosticAccumulatedTime -= DIAGNOSTIC_TIME;
