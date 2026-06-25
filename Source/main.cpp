@@ -22,7 +22,7 @@ int main() {
         return -1;
     }
 
-    GLFWwindow *window = glfwCreateWindow(W, H, "Hello World", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(W, H, "Black Hole Simulation", NULL, NULL);
     if (window == nullptr) {
         std::cerr << "WINDOW ERROR, COULDN'T CREATE, WINDOW IS NULL\n";
         glfwTerminate();
@@ -35,25 +35,17 @@ int main() {
         return -1;
     }
 
-    const char *vertexShader = createVertexShader("CircleVertex");
-    const char *fragmentShader = createFragmentShader("CircleFragment");
+    const char *vertexShader = makeVertexShader("CircleVertex");
+    const char *fragmentShader = makeFragmentShader("CircleFragment");
 
-    const char *trailVertexShader = createVertexShader("TrailVertex");
-    const char *trailFragmentShader = createFragmentShader("TrailFragment");
+    const char *trailVertexShader = makeVertexShader("TrailVertex");
+    const char *trailFragmentShader = makeFragmentShader("TrailFragment");
 
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vertexShader, nullptr);
-    glCompileShader(vs);
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &fragmentShader, nullptr);
-    glCompileShader(fs);
+    GLuint vs = createShader(vertexShader, GL_VERTEX_SHADER);
+    GLuint fs = createShader(fragmentShader, GL_FRAGMENT_SHADER);
 
-    GLuint trailVS = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(trailVS, 1, &trailVertexShader, nullptr);
-    glCompileShader(trailVS);
-    GLuint trailFS = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(trailFS, 1, &trailFragmentShader, nullptr);
-    glCompileShader(trailFS);
+    GLuint trailVS = createShader(trailVertexShader, GL_VERTEX_SHADER);
+    GLuint trailFS = createShader(trailFragmentShader, GL_FRAGMENT_SHADER);
 
     GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vs);
@@ -256,9 +248,6 @@ int main() {
         glUniform1f(uScaleLoc, 1.0f);
         glDrawArrays(GL_LINE_LOOP, 0, static_cast<GLsizei>(BHVertices.size()));
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         glUseProgram(trailShaderProgram);
         glUniform2f(tResolutionLoc, W, H);
 

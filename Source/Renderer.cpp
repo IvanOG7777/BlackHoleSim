@@ -104,7 +104,7 @@ void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Particle
     glBindVertexArray(0);
 }
 
-const char *createVertexShader(const std::string shaderType) {
+const char *makeVertexShader(const std::string &shaderType) {
     if (shaderType == "CircleVertex") {
         return R"GLSL(
             #version 330 core
@@ -150,10 +150,14 @@ const char *createVertexShader(const std::string shaderType) {
         )GLSL";
     }
 
+    if (shaderType == "GridVertex") {
+        return "";
+    }
+
     return "";
 }
 
-const char *createFragmentShader(const std::string& shaderType) {
+const char *makeFragmentShader(const std::string& shaderType) {
     if (shaderType == "CircleFragment") {
         return R"GLSL(
             #version 330 core
@@ -175,5 +179,17 @@ const char *createFragmentShader(const std::string& shaderType) {
             }
         )GLSL";
     }
+
+    if (shaderType == "GridFragment") {
+        return "";
+    }
     return "";
+}
+
+GLuint createShader(const char *shader, GLenum shaderType) {
+    GLuint s = glCreateShader(shaderType);
+    glShaderSource(s, 1, &shader, nullptr);
+    glCompileShader(s);
+
+    return s;
 }
