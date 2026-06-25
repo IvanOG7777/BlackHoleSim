@@ -12,65 +12,6 @@
 #include "../Header/Physics.h"
 #include "../Header/Input.h"
 
-const char *vertexShader = R"GLSL(
-        #version 330 core
-        layout(location = 0) in vec3 aPos; // Current vertex we are handling from the vector of vertices
-
-        uniform vec2 uResolution; //holds screen W/H
-        uniform vec2 uOffset; // current position of the particle
-        uniform float uScale; //  particles radius
-
-        void main() {
-            vec2 worldPos = aPos.xy * uScale + uOffset; // only use the xy values of the vertices, scale it and add the current position to get real new position
-
-            vec2 ndc = worldPos / uResolution; // convert from pixel coordinated to normalized range [0,1]
-            ndc = ndc * 2.0 - 1.0; // convert from normalized range to normalized device coordinates [-1,1]
-
-            gl_Position = vec4(ndc.x, ndc.y, 0.0, 1.0); // Final position in clip space (OpenGL expects vec4 in NDC range)
-        }
-    )GLSL";
-
-const char *fragmentShader = R"GLSL(
-        #version 330 core
-        out vec4 FragColor; // color that will be sent out to screen
-        uniform vec3 uColor; // RGB
-        void main() {
-            FragColor = vec4(uColor, 1.0); // pass in the RBG plus alpha
-        }
-    )GLSL";
-
-const char *trailVertexShader = R"GLSL(
-        #version 330 core
-        layout(location = 0) in vec3 aPos; // Current vertex we are handling from the vector of vertices
-        layout(location = 1) in vec3 trailColor; // input a vec3 color
-
-        uniform vec2 uResolution; //holds screen W/H
-        uniform vec2 uOffset; // current position of the particle
-        uniform float uScale; //  particles radius
-
-        out vec3 colorToFragment; // send out a vec3Color
-
-        void main() {
-            vec2 worldPos = aPos.xy * uScale + uOffset; // only use the xy values of the vertices, scale it and add the current position to get real new position
-
-            vec2 ndc = worldPos / uResolution; // convert from pixel coordinated to normalized range [0,1]
-            ndc = ndc * 2.0 - 1.0; // convert from normalized range to normalized device coordinates [-1,1]
-
-            gl_Position = vec4(ndc.x, ndc.y, 0.0, 1.0); // Final position in clip space (OpenGL expects vec4 in NDC range)
-
-            colorToFragment = trailColor; // assign so fragment can see
-        }
-    )GLSL";
-
-const char *trailFragmentShader = R"GLSL(
-        #version 330 core
-        in vec3 colorToFragment; // color coming in from trailVertex
-        out vec4 TrailColor; // Final color to output
-        void main() {
-            TrailColor = vec4(colorToFragment, 1.0); // set the trail vertex and alpah
-        }
-    )GLSL";
-
 int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -93,6 +34,12 @@ int main() {
         std::cerr << "GLAD INIT ERROR\n";
         return -1;
     }
+
+    const char *vertexShader = createVertexShader("CircleVertex");
+    const char *fragmentShader = createFragmentShader("CircleFragment");
+
+    const char *trailVertexShader = createVertexShader("TrailVertex");
+    const char *trailFragmentShader = createFragmentShader("TrailFragment");
 
     GLuint vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertexShader, nullptr);
@@ -222,9 +169,22 @@ int main() {
             //     particle.update(dt);
             // }
         }
+
+        float particleRadius = orbitalRadius(bhPosition, defaultParticle.getPosition());
+        float particleSpeed = speed(defaultParticle.getVelocity());
+        float particleEnergy = orbitalEnergy(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity(), bhMU);
+        float particleMomentum = angularMomentum(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity());
+        std:: string particleOrbitType = orbitType(particleEnergy);
+
         Vector3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
-        defaultParticle.setTrail(defaultParticle.getPosition(), {1.0f, 1.0f, 1.0f});
+        if (particleSpeed >= 0.0f && particleSpeed <= 14.0f) {
+            defaultParticle.setTrail(defaultParticle.getPosition(), {0.0f, 0.0f, 1.0f});
+        } else if (particleSpeed >= 14.0f && particleSpeed <= 20.0f) {
+            defaultParticle.setTrail(defaultParticle.getPosition(), {0.45f, 0.0f, 1.0f});
+        } else {
+            defaultParticle.setTrail(defaultParticle.getPosition(), {1.0f, 0.0f, 0.0f});
+        }
         recordTrail(defaultTrailPositions, defaultParticle.getTrail());
 
         // for (auto &particle : particles) {
@@ -240,12 +200,6 @@ int main() {
         if (hasCaptured == true) {
 
         }
-
-        float particleRadius = orbitalRadius(bhPosition, defaultParticle.getPosition());
-        float particleSpeed = speed(defaultParticle.getVelocity());
-        float particleEnergy = orbitalEnergy(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity(), bhMU);
-        float particleMomentum = angularMomentum(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity());
-        std:: string particleOrbitType = orbitType(particleEnergy);
 
         if (diagnosticAccumulatedTime >= DIAGNOSTIC_TIME) {
             diagnosticAccumulatedTime -= DIAGNOSTIC_TIME;

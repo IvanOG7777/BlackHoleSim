@@ -20,4 +20,7 @@ void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Vector3> &vec
 
 void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std:: vector<Particle::ParticleTrail> &trails);
 
+const char *createVertexShader(const std:: string shaderType);
+const char *createFragmentShader(const std:: string& shaderType);
+
 #endif //PARTICLESIM_RENDERER_H
