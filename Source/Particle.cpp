@@ -204,3 +204,22 @@ void clearTrail() {
 const Particle::ParticleTrail &Particle::getTrail() {
     return trail;
 }
+
+void Particle::recordTrail(std::vector<ParticleTrail> &positions) {
+    if (positions.size() >= 1000) { // if size is greater than 100 position
+        positions.erase(positions.begin()); // delete stale position
+        positions.emplace_back(trail); // place in newest positon
+        return;
+    }
+    positions.emplace_back(trail); // keep placing until 100
+}
+
+// void recordTrail(std::vector<Particle::ParticleTrail> &trailPositions, const Particle::ParticleTrail &particlePosition) {
+//     if (trailPositions.size() >= 1000) { // if size is greater than 100 position
+//         trailPositions.erase(trailPositions.begin()); // delete stale position
+//         trailPositions.emplace_back(particlePosition); // place in newest positon
+//         return;
+//     }
+//     trailPositions.emplace_back(particlePosition); // keep placing until 100
+// }
+

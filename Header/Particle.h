@@ -6,6 +6,7 @@
 #define PARTICLESIM_PARTICLE_H
 
 #include <iostream>
+#include <vector>
 #include "Core.h"
 
 
@@ -99,6 +100,9 @@ public:
     void clearTrail();
 
     const ParticleTrail &getTrail();
+
+    void recordTrail(std::vector<ParticleTrail> &positions);
+    // std::vector<ParticleTrail> &positions, const ParticleTrail &particlePosition
 };
 
 

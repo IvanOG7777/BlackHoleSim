@@ -7,18 +7,20 @@ add_executable(BlackHoleSim
         Source/glad.c
         Source/main.cpp
         Source/Particle.cpp
-        Source/Renderer.cpp
 
         Header/Core.h
         Header/Particle.h
         Header/Constants.h
-        Header/Renderer.h
         Header/Physics.h
         Source/Physics.cpp
         Header/Input.h
         Source/Input.cpp
         Header/Blackhole.h
         Source/Blackhole.cpp
+        Header/Geometry.h
+        Source/Geometry.cpp
+        Source/GLutils.cpp
+        Header/GLutils.h
 )
 
 target_include_directories(BlackHoleSim PRIVATE

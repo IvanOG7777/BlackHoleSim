@@ -8,9 +8,10 @@
 #include "../Header/Blackhole.h"
 #include "../Header/Constants.h"
 #include "../Header/Particle.h"
-#include "../Header/Renderer.h"
 #include "../Header/Physics.h"
 #include "../Header/Input.h"
+#include "../Header/Geometry.h"
+#include "../Header/GLutils.h"
 
 int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -22,12 +23,7 @@ int main() {
         return -1;
     }
 
-    GLFWwindow *window = glfwCreateWindow(W, H, "Black Hole Simulation", NULL, NULL);
-    if (window == nullptr) {
-        std::cerr << "WINDOW ERROR, COULDN'T CREATE, WINDOW IS NULL\n";
-        glfwTerminate();
-        return -1;
-    }
+    GLFWwindow *window = createWindow(W, H, "Black hole simulation");
 
     glfwMakeContextCurrent(window);
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
@@ -166,7 +162,7 @@ int main() {
         defaultParticle.setAcceleration(acceleration);
         defaultParticle.setTrailColor(particleSpeed);
 
-        recordTrail(defaultTrailPositions, defaultParticle.getTrail());
+        defaultParticle.recordTrail(defaultTrailPositions);
 
         particleIndex = 0;
         for (auto &particle: particles) {
@@ -176,7 +172,7 @@ int main() {
             particleSpeed = speed(particle.getVelocity());
             particle.setTrailColor(particleSpeed);
 
-            recordTrail(vectorParticleTrails[particleIndex], particle.getTrail());
+            particle.recordTrail(vectorParticleTrails[particleIndex]);
             particleIndex++;
         }
 
