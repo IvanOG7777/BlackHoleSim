@@ -213,13 +213,3 @@ void Particle::recordTrail(std::vector<ParticleTrail> &positions) {
     }
     positions.emplace_back(trail); // keep placing until 100
 }
-
-// void recordTrail(std::vector<Particle::ParticleTrail> &trailPositions, const Particle::ParticleTrail &particlePosition) {
-//     if (trailPositions.size() >= 1000) { // if size is greater than 100 position
-//         trailPositions.erase(trailPositions.begin()); // delete stale position
-//         trailPositions.emplace_back(particlePosition); // place in newest positon
-//         return;
-//     }
-//     trailPositions.emplace_back(particlePosition); // keep placing until 100
-// }
-
