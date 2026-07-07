@@ -9,8 +9,9 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include "Particle.h"
+#include "glm/glm/detail/type_vec.hpp"
 
-void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Vector3> &vector3s);
+void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<glm::vec3> &vector3s);
 
 void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Particle::ParticleTrail> &trails);
 

@@ -7,8 +7,8 @@
 
 void keepInFrame(Particle &particle) {
     float radius = particle.getRadius();
-    Vector3 pos = particle.getPosition();
-    Vector3 vel = particle.getVelocity();
+    glm::vec3 pos = particle.getPosition();
+    glm::vec3 vel = particle.getVelocity();
 
     float minX = radius;
     float maxX = W - radius;
@@ -39,25 +39,25 @@ void keepInFrame(Particle &particle) {
     particle.setVelocity(vel);
 }
 
-Vector3 gravitationalAcceleration(const Vector3 &BHPosition, const Vector3 &particlePosition, float mu) {
+glm::vec3 gravitationalAcceleration(const glm::vec3 &BHPosition, const glm::vec3 &particlePosition, float mu) {
 
-    Vector3 direction = BHPosition - particlePosition; // gets direction vector
-    float distanceSquared = direction.squareMagnitude(); // gets distance
+    glm::vec3 direction = BHPosition - particlePosition; // gets direction vector
+    float distanceSquared = glm::length(direction) * glm::length(direction); // gets distance
 
     if (distanceSquared <= 0.0f) return {};
 
     float distance = std:: sqrtf(distanceSquared);
     float distanceCubed = distanceSquared * distance;
 
-    Vector3 acceleration = (direction * mu) / distanceCubed; // calculates acceleration
+    glm::vec3 acceleration = (direction * mu) / distanceCubed; // calculates acceleration
 
     return acceleration;
 }
 
-bool hasBeenCaptured(const Vector3 &BHPosition, const Vector3 &particlePosition, float captureRadius) {
-    Vector3 direction = BHPosition - particlePosition;
+bool hasBeenCaptured(const glm::vec3 &BHPosition, const glm::vec3 &particlePosition, float captureRadius) {
+    glm::vec3 direction = BHPosition - particlePosition;
 
-    float distance = direction.magnitude();
+    float distance = glm::length(direction);
 
     return distance <= captureRadius;
 }
@@ -69,8 +69,8 @@ float orbitalSpeed(const float &mu, const float &radius) {
 }
 
 
-Vector3 orbitalTangent(const Vector3 &BHPosition, const Vector3 &particlePosition) {
-    Vector3 tangent = BHPosition - particlePosition; // get direction;
+glm::vec3 orbitalTangent(const glm::vec3 &BHPosition, const glm::vec3 &particlePosition) {
+    glm::vec3 tangent = BHPosition - particlePosition; // get direction;
 
     float x = tangent.x;
     float y = tangent.y;
@@ -80,26 +80,26 @@ Vector3 orbitalTangent(const Vector3 &BHPosition, const Vector3 &particlePositio
     tangent.y = x;
 
     // normalize new vector
-    tangent.normalize();
+    tangent = glm::normalize(tangent);
 
     // returns the direction particle should be traveling in the y direction to combat gravitational pull
     // return normalized vector of y = 1 or y = -1
     return tangent;
 }
 
-Vector3 circularVelocity(const Vector3& BHPosition, const Vector3& particlePosition, const float &mu, const float &radius) {
+glm::vec3 circularVelocity(const glm::vec3& BHPosition, const glm::vec3& particlePosition, const float &mu, const float &radius) {
     float speed = orbitalSpeed(mu, radius);
-    Vector3 tangent = orbitalTangent(BHPosition, particlePosition);
+    glm::vec3 tangent = orbitalTangent(BHPosition, particlePosition);
 
-    Vector3 velocity = tangent * speed;
+    glm::vec3 velocity = tangent * speed;
 
     return velocity;
 }
 
-float orbitalRadius(const Vector3& BHPosition, const Vector3& particlePosition) {
-    Vector3 displacement = BHPosition - particlePosition;
+float orbitalRadius(const glm::vec3& BHPosition, const glm::vec3& particlePosition) {
+    glm::vec3 displacement = BHPosition - particlePosition;
 
-    float radius = displacement.magnitude();
+    float radius = glm::length(displacement);
 
     return radius;
 }
@@ -129,31 +129,31 @@ void setParticleOrbit(Particle &particle, Particle &BH, const float &velocityMul
     particle.setRadius(radius);
 
     float initOrbitalRadius = orbitalRadius(BH.getPosition(), particle.getPosition());
-    Vector3 velocity = circularVelocity(BH.getPosition(), particle.getPosition(), MU, initOrbitalRadius);
+    glm::vec3 velocity = circularVelocity(BH.getPosition(), particle.getPosition(), MU, initOrbitalRadius);
 
     velocity *= velocityMultiplayer;
 
     particle.setVelocity(velocity);
 }
 
-float speed(const Vector3 &velocity) {
-    return velocity.magnitude();
+float speed(const glm::vec3 &velocity) {
+    return glm::length(velocity);
 }
 
-float orbitalEnergy(const Vector3 &BHPosition, const Vector3 &particlePosition, const Vector3 &velocity, float mu) {
-    Vector3 radialDisplacement = BHPosition - particlePosition;
+float orbitalEnergy(const glm::vec3 &BHPosition, const glm::vec3 &particlePosition, const glm::vec3 &velocity, float mu) {
+    glm::vec3 radialDisplacement = BHPosition - particlePosition;
 
-    float radius = radialDisplacement.magnitude();
+    float radius = glm::length(radialDisplacement);
 
-    auto velSquared = velocity * velocity;
+    auto velSquared = glm::dot(velocity, velocity);
 
     float energy = (0.5f * velSquared) - (mu / radius);
 
     return energy;
 }
 
-float angularMomentum(const Vector3 &BHPosition, const Vector3 &particlePosition, const Vector3 &particleVelocity) {
-    Vector3 radialDisplacement = BHPosition - particlePosition;
+float angularMomentum(const glm::vec3 &BHPosition, const glm::vec3 &particlePosition, const glm::vec3 &particleVelocity) {
+    glm::vec3 radialDisplacement = BHPosition - particlePosition;
 
     auto momentum = (radialDisplacement.x * particleVelocity.y) - (radialDisplacement.y * particleVelocity.x);
 
@@ -201,7 +201,7 @@ void setDisk(Blackhole &blackhole, Particle &particle) {
 
     float radius = orbitalRadius(blackhole.getPosition(), {x,y,0});
 
-    Vector3 velocity = circularVelocity(blackhole.getPosition(), particle.getPosition(), blackhole.getMU(), radius);
+    glm::vec3 velocity = circularVelocity(blackhole.getPosition(), particle.getPosition(), blackhole.getMU(), radius);
 
     particle.setVelocity(velocity);
 }

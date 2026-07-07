@@ -8,7 +8,6 @@ add_executable(BlackHoleSim
         Source/main.cpp
         Source/Particle.cpp
 
-        Header/Core.h
         Header/Particle.h
         Header/Constants.h
         Header/Physics.h
@@ -21,6 +20,8 @@ add_executable(BlackHoleSim
         Source/Geometry.cpp
         Source/GLutils.cpp
         Header/GLutils.h
+        Header/Sphere.h
+        Header/Camera.h
 )
 
 target_include_directories(BlackHoleSim PRIVATE

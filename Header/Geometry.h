@@ -6,10 +6,12 @@
 #define PARTICLESIM_GEOMETRY_H
 
 #include <vector>
-#include "Core.h"
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
 
-std::vector<Vector3> makeUnitCircle(const float &radius);
 
-std::vector<Vector3> makeGrid(int slices);
+std::vector<glm::vec3> makeUnitCircle(const float &radius);
+
+std::vector<glm::vec3> makeGrid(int slices);
 
 #endif //PARTICLESIM_GEOMETRY_H

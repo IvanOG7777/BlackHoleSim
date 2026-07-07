@@ -91,11 +91,11 @@ int main() {
 
     std::vector<std::vector<Particle::ParticleTrail> > vectorParticleTrails(2000);
 
-    std::vector<Vector3> defaultParticleVertices;
-    std::vector<Vector3> BHVertices;
-    std::vector<Vector3> captureRadiusVertices;
-    std::vector<Vector3> photonSphereVertices;
-    std::vector<Vector3> triangles;
+    std::vector<glm::vec3> defaultParticleVertices;
+    std::vector<glm::vec3> BHVertices;
+    std::vector<glm::vec3> captureRadiusVertices;
+    std::vector<glm::vec3> photonSphereVertices;
+    std::vector<glm::vec3> triangles;
     std::vector<Particle::ParticleTrail> defaultTrailPositions;
 
     defaultParticleVertices = makeUnitCircle(defaultParticle.getRadius());
@@ -158,7 +158,7 @@ int main() {
         float particleMomentum = angularMomentum(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity());
         std::string particleOrbitType = orbitType(particleEnergy);
 
-        Vector3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
+        glm::vec3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
         defaultParticle.setTrailColor(particleSpeed);
 
@@ -166,7 +166,7 @@ int main() {
 
         particleIndex = 0;
         for (auto &particle: particles) {
-            Vector3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
+            glm::vec3 acc = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
             particle.setAcceleration(acc);
 
             particleSpeed = speed(particle.getVelocity());

@@ -7,23 +7,24 @@
 
 #include <iostream>
 #include <vector>
-#include "Core.h"
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
 
 
 class Particle {
 public:
     struct ParticleTrail {
-        Vector3 position;
-        Vector3 color;
+        glm::vec3 position;
+        glm::vec3 color;
 
         ParticleTrail();
     };
 
 protected:
-    Vector3 position;
-    Vector3 velocity;
-    Vector3 acceleration;
-    Vector3 forceAccumulator;
+    glm::vec3 position;
+    glm::vec3 velocity;
+    glm::vec3 acceleration;
+    glm::vec3 forceAccumulator;
     ParticleTrail trail;
 
     float inverseMass;
@@ -38,30 +39,30 @@ public:
     Particle();
 
 
-    friend std::ostream &operator<<(std::ostream &stream, const Vector3 &vector);
+    friend std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vector);
 
-    void setPosition(const Vector3 &passedPosition);
+    void setPosition(const glm::vec3 &passedPosition);
 
     void setPosition(float x, float y, float z);
 
-    const Vector3 &getPosition() const;
+    const glm::vec3 &getPosition() const;
 
     void printPosition() const;
 
-    void setVelocity(const Vector3 &passedVelocity);
+    void setVelocity(const glm::vec3 &passedVelocity);
 
     void setVelocity(float x, float y, float z);
 
-    const Vector3 &getVelocity() const;
+    const glm::vec3 &getVelocity() const;
 
     void printVelocity() const;
 
 
-    void setAcceleration(const Vector3 &passedAcceleration);
+    void setAcceleration(const glm::vec3 &passedAcceleration);
 
     void setAcceleration(float x, float y, float z);
 
-    const Vector3 &getAcceleration() const;
+    const glm::vec3 &getAcceleration() const;
 
     void printAcceleration() const;
 
@@ -83,7 +84,7 @@ public:
 
     const float &getRadius() const;
 
-    void addForce(const Vector3 &passedForce);
+    void addForce(const glm::vec3 &passedForce);
 
     void addForce(float x, float y, float z);
 
@@ -93,7 +94,7 @@ public:
 
     void update(float deltaTime);
 
-    void setTrail(const Vector3 &passedPosition, const Vector3 &passedColor);
+    void setTrail(const glm::vec3 &passedPosition, const glm::vec3 &passedColor);
 
     void setTrailColor(const float &particleSpeed);
 

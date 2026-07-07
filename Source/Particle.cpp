@@ -28,24 +28,28 @@ void Particle::integrate(float duration) {
 
     assert(duration > 0.0f);
 
-    Vector3 resultingAcceleration = acceleration + forceAccumulator * inverseMass;
+    glm::vec3 resultingAcceleration = acceleration + forceAccumulator * inverseMass;
 
-    velocity.addScaledVector(resultingAcceleration, duration);
+    auto scaledAcceleration = resultingAcceleration * duration;
 
-    position.addScaledVector(velocity, duration);
+    velocity += scaledAcceleration;
+
+    auto scaledVelocity = velocity * duration;
+
+    position += scaledVelocity;
 
     velocity *= powf(damping, duration);
 
     clearAccumulator();
 }
 
-std::ostream &operator<<(std::ostream &stream, Vector3 &vector) {
+std::ostream &operator<<(std::ostream &stream, glm::vec3 &vector) {
     stream << "x: " << vector.x << ", y: " << vector.y << " z: " << vector.z << "\n";
     return stream;
 }
 
 /////////// Position functions
-void Particle::setPosition(const Vector3 &passedPosition) {
+void Particle::setPosition(const glm::vec3 &passedPosition) {
     position = passedPosition;
 }
 
@@ -55,17 +59,17 @@ void Particle::setPosition(float x, float y, float z) {
     position.z = z;
 }
 
-const Vector3 &Particle::getPosition() const {
+const glm::vec3 &Particle::getPosition() const {
     return position;
 }
 
-void Particle::printPosition() const {
-    std:: cout << "Position: " << position;
-}
+// void Particle::printPosition() const {
+//     std:: cout << "Position: " << position;
+// }
 ///////////
 
 /////////// Velocity functions
-void Particle::setVelocity(const Vector3 &passedVelocity) {
+void Particle::setVelocity(const glm::vec3 &passedVelocity) {
     velocity = passedVelocity;
 }
 
@@ -75,17 +79,17 @@ void Particle::setVelocity(float x, float y, float z) {
     velocity.z = z;
 }
 
-const Vector3 &Particle::getVelocity() const {
+const glm::vec3 &Particle::getVelocity() const {
     return velocity;
 }
 
-void Particle::printVelocity() const {
-    std:: cout << "Velocity: " << velocity;
-}
+// void Particle::printVelocity() const {
+//     std:: cout << "Velocity: " << velocity;
+// }
 ///////////
 
 /////////// Acceleration functions
-void Particle::setAcceleration(const Vector3 &passedAcceleration) {
+void Particle::setAcceleration(const glm::vec3 &passedAcceleration) {
     acceleration = passedAcceleration;
 }
 
@@ -95,13 +99,13 @@ void Particle::setAcceleration(float x, float y, float z) {
     acceleration.z = z;
 }
 
-const Vector3 &Particle::getAcceleration() const {
+const glm::vec3 &Particle::getAcceleration() const {
     return acceleration;
 }
 
-void Particle::printAcceleration() const {
-    std:: cout << "Acceleration: " << acceleration;
-}
+// void Particle::printAcceleration() const {
+//     std:: cout << "Acceleration: " << acceleration;
+// }
 ///////////
 
 void Particle::setMass(float passedMass) {
@@ -145,7 +149,7 @@ const float &Particle::getRadius() const {
     return radius;
 }
 
-void Particle::addForce(const Vector3 &passedForce) {
+void Particle::addForce(const glm::vec3 &passedForce) {
     forceAccumulator += passedForce;
 }
 
@@ -176,7 +180,7 @@ void Particle::update(float deltaTime) {
     integrate(deltaTime);
 }
 
-void Particle::setTrail(const Vector3 &passedPosition, const Vector3 &passedColor) {
+void Particle::setTrail(const glm::vec3 &passedPosition, const glm::vec3 &passedColor) {
     ParticleTrail particleTrail;
     particleTrail.position = passedPosition;
     particleTrail.color = passedColor;
