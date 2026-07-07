@@ -90,6 +90,9 @@ int main() {
     setDisk(BH, defaultParticle);
 
     std::vector<std::vector<Particle::ParticleTrail> > vectorParticleTrails(2000);
+    for (auto &trail : vectorParticleTrails) {
+        trail.reserve(1000);
+    }
 
     std::vector<glm::vec3> defaultParticleVertices;
     std::vector<glm::vec3> BHVertices;
@@ -161,6 +164,9 @@ int main() {
         glm::vec3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
         defaultParticle.setTrailColor(particleSpeed);
+
+        Particle::ParticleTrail currentTrail;
+        currentTrail.position = defaultParticle.getPosition();
 
         defaultParticle.recordTrail(defaultTrailPositions);
 

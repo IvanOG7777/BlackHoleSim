@@ -19,7 +19,7 @@ Particle::Particle() {
 }
 
 Particle::ParticleTrail::ParticleTrail() {
-    position = {};
+    position = {0.0f,0.0f,0.0f};
     color = {1.0f, 1.0f, 1.0f};
 }
 
@@ -206,14 +206,14 @@ void clearTrail() {
 }
 
 const Particle::ParticleTrail &Particle::getTrail() {
-    return trail;
+    return trailPositions;
 }
 
-void Particle::recordTrail(std::vector<ParticleTrail> &positions) {
-    if (positions.size() >= 1000) { // if size is greater than 100 position
-        positions.erase(positions.begin()); // delete stale position
-        positions.emplace_back(trail); // place in newest positon
+void Particle::recordTrail(ParticleTrail &passedPosition) {
+    if (trailPositions.size() >= 1000) { // if size is greater than 100 position
+        trailPositions.erase(trailPositions.begin()); // delete stale position
+        trailPositions.emplace_back(passedPosition); // place in newest positon
         return;
     }
-    positions.emplace_back(trail); // keep placing until 100
+    trailPositions.emplace_back(passedPosition); // keep placing until 100
 }

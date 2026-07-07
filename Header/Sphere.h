@@ -9,11 +9,27 @@
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
 
-class Sphere {
-    glm::vec3 position;
+#include "Particle.h"
+
+class Sphere : Particle {
+private:
     glm::vec3 phase;
     std::vector<glm::vec3> mesh;
-    // std:: vector<ParticleTrail
+
+public:
+
+    Sphere();
+
+    void setMesh(const std::vector<glm::vec3> &passedMesh);
+    size_t getMeshSize();
+    glm::vec3 *getMeshData();
+
+    void setPhase(float passedX, float passedY, float passedZ);
+    void setPhase(glm::vec3 passedPhase);
+    glm::vec3 &getPhase();
+
+    size_t getTrailSize();
+    ParticleTrail *getTrailData();
 
 };
 
