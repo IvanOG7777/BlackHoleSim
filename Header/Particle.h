@@ -25,7 +25,7 @@ protected:
     glm::vec3 velocity;
     glm::vec3 acceleration;
     glm::vec3 forceAccumulator;
-    glm::vec3 trail;
+    ParticleTrail trail;
     std::vector<ParticleTrail> trailPositions;
 
     float inverseMass;
@@ -103,7 +103,7 @@ public:
 
     const ParticleTrail &getTrail();
 
-    void recordTrail(ParticleTrail &passedPosition);
+    void recordTrail(std::vector<ParticleTrail> &passedPositions);
     // std::vector<ParticleTrail> &positions, const ParticleTrail &particlePosition
 };
 

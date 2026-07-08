@@ -165,9 +165,6 @@ int main() {
         defaultParticle.setAcceleration(acceleration);
         defaultParticle.setTrailColor(particleSpeed);
 
-        Particle::ParticleTrail currentTrail;
-        currentTrail.position = defaultParticle.getPosition();
-
         defaultParticle.recordTrail(defaultTrailPositions);
 
         particleIndex = 0;

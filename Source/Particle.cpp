@@ -181,13 +181,12 @@ void Particle::update(float deltaTime) {
 }
 
 void Particle::setTrail(const glm::vec3 &passedPosition, const glm::vec3 &passedColor) {
-    ParticleTrail particleTrail;
-    particleTrail.position = passedPosition;
-    particleTrail.color = passedColor;
-    trail = particleTrail;
+    trail.position = passedPosition;
+    trail.color = passedColor;
 }
 
 void Particle::setTrailColor(const float &particleSpeed) {
+    //slower speeds
     if (particleSpeed >= 0.0f && particleSpeed <= 10.0f) {
         setTrail(position, {0.0f, 0.2f, 1.0f});
     } else if (particleSpeed >= 10.0f && particleSpeed <= 16.0f) {
@@ -199,6 +198,7 @@ void Particle::setTrailColor(const float &particleSpeed) {
     } else {
         setTrail(position, {1.0, 0.0, 0.0});
     }
+    //Faster speeds
 }
 
 void clearTrail() {
@@ -206,14 +206,14 @@ void clearTrail() {
 }
 
 const Particle::ParticleTrail &Particle::getTrail() {
-    return trailPositions;
+    return trail;
 }
 
-void Particle::recordTrail(ParticleTrail &passedPosition) {
-    if (trailPositions.size() >= 1000) { // if size is greater than 100 position
-        trailPositions.erase(trailPositions.begin()); // delete stale position
-        trailPositions.emplace_back(passedPosition); // place in newest positon
+void Particle::recordTrail(std::vector<ParticleTrail> &passedPositions) {
+    if (passedPositions.size() >= 1000) { // if size is greater than 100 position
+        passedPositions.erase(passedPositions.begin()); // delete stale position
+        passedPositions.emplace_back(trail); // place in newest positon
         return;
     }
-    trailPositions.emplace_back(passedPosition); // keep placing until 100
+    passedPositions.emplace_back(trail); // keep placing until 100
 }
