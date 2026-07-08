@@ -86,8 +86,20 @@ int main() {
 
     SceneState sceneState{};
     Particle defaultParticle;
-    Blackhole BH;
+
     Camera camera;
+    Blackhole BH;
+    SphereParticle defaultSphere;
+    std:: vector<SphereParticle> sphereParticles;
+
+    sphereParticles.reserve(2000);
+    for (int i = 0; i < 2000; i++) {
+        SphereParticle current;
+        auto mesh = makeSphere(5.0f);
+        current.setMesh(mesh);
+        setDisk(BH, current);
+        sphereParticles.emplace_back(current);
+    }
 
     BH.setMU(MU);
     BH.setCaptureRadius();

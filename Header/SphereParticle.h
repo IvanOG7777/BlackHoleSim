@@ -11,14 +11,14 @@
 
 #include "Particle.h"
 
-class Sphere : public Particle {
+class SphereParticle : public Particle {
 private:
     glm::vec3 phase;
     std::vector<glm::vec3> mesh;
 
 public:
 
-    Sphere();
+    SphereParticle();
 
     void setMesh(const std::vector<glm::vec3> &passedMesh);
     size_t getMeshSize();

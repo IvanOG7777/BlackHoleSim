@@ -20,9 +20,9 @@ add_executable(BlackHoleSim
         Source/Geometry.cpp
         Source/GLutils.cpp
         Header/GLutils.h
-        Header/Sphere.h
+        Header/SphereParticle.h
         Header/Camera.h
-        Source/Sphere.cpp
+        Source/SphereParticle.cpp
         Source/Camera.cpp
 )
 

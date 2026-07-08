@@ -6,9 +6,9 @@
 
 
 
-#include "Sphere.h"
+#include "SphereParticle.h"
 
-class Blackhole : public Sphere {
+class Blackhole : public SphereParticle {
 private:
     float MU;
     float captureRadius;
