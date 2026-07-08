@@ -11,7 +11,7 @@
 
 #include "Particle.h"
 
-class Sphere : Particle {
+class Sphere : public Particle {
 private:
     glm::vec3 phase;
     std::vector<glm::vec3> mesh;

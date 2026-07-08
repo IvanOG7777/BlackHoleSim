@@ -37,11 +37,17 @@ int main() {
     const char *trailVertexShader = makeVertexShader("TrailVertex");
     const char *trailFragmentShader = makeFragmentShader("TrailFragment");
 
+    const char *threeDVertexShader = makeVertexShader("3DVertex");
+    const char *threeDVertexFragment = makeVertexShader("3DFragment");
+
     GLuint vs = createShader(vertexShader, GL_VERTEX_SHADER);
     GLuint fs = createShader(fragmentShader, GL_FRAGMENT_SHADER);
 
     GLuint trailVS = createShader(trailVertexShader, GL_VERTEX_SHADER);
     GLuint trailFS = createShader(trailFragmentShader, GL_FRAGMENT_SHADER);
+
+    GLuint threeDVS = createShader(threeDVertexShader, GL_VERTEX_SHADER);
+    GLuint threeDFS = createShader(threeDVertexFragment, GL_FRAGMENT_SHADER);
 
     GLuint shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vs);
@@ -53,10 +59,17 @@ int main() {
     glAttachShader(trailShaderProgram, trailFS);
     glLinkProgram(trailShaderProgram);
 
+    GLuint threeDShaderProgram = glCreateProgram();
+    glAttachShader(threeDShaderProgram, threeDVS);
+    glAttachShader(threeDShaderProgram, threeDFS);
+    glLinkProgram(threeDShaderProgram);
+
     glDeleteShader(vs);
     glDeleteShader(fs);
     glDeleteShader(trailVS);
     glDeleteShader(trailFS);
+    glDeleteShader(threeDVS);
+    glDeleteShader(threeDFS);
 
     GLuint uResolutionLoc = glGetUniformLocation(shaderProgram, "uResolution");
     GLuint uColorLoc = glGetUniformLocation(shaderProgram, "uColor");
@@ -66,6 +79,9 @@ int main() {
     GLuint tResolutionLoc = glGetUniformLocation(trailShaderProgram, "uResolution");
     GLuint tOffsetLoc = glGetUniformLocation(trailShaderProgram, "uOffset");
     GLuint tScaleLoc = glGetUniformLocation(trailShaderProgram, "uScale");
+
+    GLuint threeDUColorLoc = glGetUniformLocation(threeDShaderProgram, "uColor");
+    GLuint uMVP = glGetUniformLocation(threeDShaderProgram, "uMVP");
 
     SceneState sceneState{};
     Particle defaultParticle;
@@ -255,7 +271,7 @@ int main() {
         glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
 
         particleIndex = 0;
-        for (auto &particle : particles) {
+        for (auto &unusedParticle : particles) {
             glBindVertexArray(trailVAO);
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
 
