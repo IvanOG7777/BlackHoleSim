@@ -14,4 +14,8 @@ std::vector<glm::vec3> makeUnitCircle(const float &radius);
 
 std::vector<glm::vec3> makeGrid(int slices);
 
+std::vector<glm::vec3> makeSphere(float radius);
+
+std::vector<glm::vec3> make3DGrid(int widthX, int widthY, int widthZ, int squaresInX, int squaresInY, int squaresInZ);
+
 #endif //PARTICLESIM_GEOMETRY_H

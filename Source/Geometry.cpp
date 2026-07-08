@@ -33,6 +33,10 @@ std::vector<glm::vec3> makeGrid(int slices) {
     std:: vector<glm::vec3> points;
     std:: vector<glm::vec3> triangles;
 
+    // minimum reserve size to avoid too many allocation
+    points.reserve(slices * slices);
+    triangles.reserve(slices * slices);
+
     for (int row = 0; row <= slices; row++) {
         for (int col = 0; col <= slices; col++) {
 
@@ -58,6 +62,50 @@ std::vector<glm::vec3> makeGrid(int slices) {
             //triangle 2
             triangles.emplace_back(points[bottomLeft]);
             triangles.emplace_back(points[bottomRight]);
+            triangles.emplace_back(points[topRight]);
+        }
+    }
+
+    return triangles;
+}
+
+std::vector<glm::vec3> makeSphere(float radius) {
+    std:: vector<glm::vec3> points;
+    std::vector<glm::vec3> triangles;
+
+    int stacks = 16; // rows
+    int sectors = 32; // cols
+
+    // minimum reserve size to avoid too many allocation
+    points.reserve(stacks * sectors);
+    triangles.reserve(stacks * sectors);
+
+    for (int row = 0; row <= stacks; row++) {
+        for (int col = 0; col <= sectors; col++) {
+            float phi = glm::pi<float>() * static_cast<float>(row) / static_cast<float>(stacks);
+            float theta = (2.0f * glm::pi<float>()) * static_cast<float>(col) / static_cast<float>(sectors);
+
+            float x = std:: cosf(theta) * std:: sinf(phi);
+            float y = std:: cosf(phi);
+            float z = std:: sinf(theta) * std:: sinf(phi);
+
+            points.emplace_back(x * radius, y * radius, z * radius);
+        }
+    }
+
+    for (int row = 0; row < stacks; row++) {
+        for (int col = 0; col < sectors; col++) {
+            int bottomLeft = row * (sectors + 1) + col;
+            int bottomRight = row * (sectors + 1) + col + 1;
+            int topLeft = (row + 1) * (sectors + 1) + col;
+            int topRight = (row + 1) * (sectors + 1) + col + 1;
+
+            triangles.emplace_back(points[bottomLeft]);
+            triangles.emplace_back(points[topLeft]);
+            triangles.emplace_back(points[bottomRight]);
+
+            triangles.emplace_back(points[bottomRight]);
+            triangles.emplace_back(points[topLeft]);
             triangles.emplace_back(points[topRight]);
         }
     }
