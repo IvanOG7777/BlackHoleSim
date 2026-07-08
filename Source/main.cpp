@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../Header/Blackhole.h"
+#include "../Header/Camera.h"
 #include "../Header/Constants.h"
 #include "../Header/Particle.h"
 #include "../Header/Physics.h"
@@ -86,6 +87,7 @@ int main() {
     SceneState sceneState{};
     Particle defaultParticle;
     Blackhole BH;
+    Camera camera;
 
     BH.setMU(MU);
     BH.setCaptureRadius();
@@ -146,28 +148,82 @@ int main() {
     float accumulatedTime = 0;
     float diagnosticAccumulatedTime = 0;
 
-    auto startTime = std::chrono::high_resolution_clock::now();
+    auto startTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<float> deltaTime = currentTime - startTime;
+        auto currentTime = glfwGetTime();
+        auto deltaTime = currentTime - startTime;
         startTime = currentTime;
-        auto dt = deltaTime.count();
 
-        accumulatedTime += dt;
-        diagnosticAccumulatedTime += dt;
+        accumulatedTime += static_cast<float>(deltaTime);
+        diagnosticAccumulatedTime += static_cast<float>(deltaTime);
 
         int w = W;
         int h = H;
+
+        auto position = camera.getPosition();
+        auto direction = camera.getDirection();
+        auto right = camera.getRight();
+        camera.speed = 15.0f;
+
+        int wKey = glfwGetKey(window, GLFW_KEY_W);
+        int aKey = glfwGetKey(window, GLFW_KEY_A);
+        int sKey = glfwGetKey(window, GLFW_KEY_S);
+        int dKey = glfwGetKey(window, GLFW_KEY_D);
+        int spaceKey = glfwGetKey(window, GLFW_KEY_SPACE);
+        int leftControlKey = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
+        int leftShift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT);
+
+        if (wKey == GLFW_PRESS) {
+            position += direction * camera.speed;
+        }
+        if (sKey == GLFW_PRESS) {
+            position -= direction * camera.speed;
+        }
+        if (dKey == GLFW_PRESS) {
+            position += right * camera.speed;
+        }
+        if (aKey== GLFW_PRESS) {
+            position -= right * camera.speed;
+        }
+        if (spaceKey == GLFW_PRESS) {
+            position.y += camera.speed;
+        }
+        if (leftControlKey == GLFW_PRESS) {
+            position.y -= camera.speed;
+        }
+
+        if (wKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position += direction *  (camera.speed * 2);
+        }
+        if (sKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position -= direction *  (camera.speed * 2);
+        }
+        if (dKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position += right *  (camera.speed * 2);
+        }
+        if (aKey== GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position -= right * (camera.speed * 2);
+        }
+        if (spaceKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position.y += camera.speed * 2;
+        }
+        if (leftControlKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
+            position.y -= camera.speed * 2;
+        }
+        // keyboard polling
+
+
         int particleIndex = 0;
         float bhMU = BH.getMU();
         auto bhPosition = BH.getPosition();
 
+        // Fixed per frame time
         if (accumulatedTime >= FIXED_DT) {
             accumulatedTime -= FIXED_DT;
-            dt = FIXED_DT;
-            defaultParticle.update(dt);
+            deltaTime = FIXED_DT;
+            defaultParticle.update(static_cast<float>(deltaTime));
             for (auto &particle: particles) {
-                particle.update(dt);
+                particle.update(static_cast<float>(deltaTime));
             }
         }
 

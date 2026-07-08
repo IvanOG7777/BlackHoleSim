@@ -5,6 +5,7 @@
 #include "../Header/Input.h"
 
 
+// Call back function used to set different particles states, will see how this acts for 3d version
 void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods) {
     auto *state = static_cast<SceneState *>(glfwGetWindowUserPointer(window));
     if (key == GLFW_KEY_ESCAPE) {
