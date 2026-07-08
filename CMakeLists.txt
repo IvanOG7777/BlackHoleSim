@@ -23,6 +23,7 @@ add_executable(BlackHoleSim
         Header/Sphere.h
         Header/Camera.h
         Source/Sphere.cpp
+        Source/Camera.cpp
 )
 
 target_include_directories(BlackHoleSim PRIVATE
