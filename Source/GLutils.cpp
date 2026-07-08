@@ -84,8 +84,17 @@ const char *makeVertexShader(const std::string &shaderType) {
         )GLSL";
     }
 
-    if (shaderType == "GridVertex") {
-        return "";
+    if (shaderType == "3DVertex") {
+        return R"GLSL(
+            #version 330 core
+            layout(location = 0) in vec3 aPos;
+
+            uniform mat4 uMVP;
+
+            void main() {
+                gl_position = uMVP * vec4(aPos, 1.0);
+            }
+        )GLSL";
     }
 
     return "";
@@ -114,8 +123,16 @@ const char *makeFragmentShader(const std::string& shaderType) {
         )GLSL";
     }
 
-    if (shaderType == "GridFragment") {
-        return "";
+    if (shaderType == "3DFragment") {
+        return R"GLSL(
+            #version 330 core
+            out vec4 fragment;
+            uniform vec3 uColor;
+
+            void main() {
+                fragment = vec4(uColor, 1.0);
+            }
+        )GLSL";
     }
     return "";
 }
