@@ -125,16 +125,6 @@ int main() {
     float accumulatedTime = 0;
     float diagnosticAccumulatedTime = 0;
 
-    glGenVertexArrays(1, &sphereVA0);
-    glGenBuffers(1, &sphereVBO);
-    glBindVertexArray(sphereVA0);
-    glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-    glBufferData(GL_ARRAY_BUFFER, BH.getMeshSize() * sizeof(glm::vec3), BH.getMeshData(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
     glEnable(GL_DEPTH_TEST);
 
     auto startTime = glfwGetTime();
