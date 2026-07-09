@@ -112,3 +112,84 @@ std::vector<glm::vec3> makeSphere(float radius) {
 
     return triangles;
 }
+
+int getIndex (int x, int y, int z, int squaresInY, int squaresInZ) {
+    return (x * (squaresInY + 1) * (squaresInZ + 1)) + (y * (squaresInZ + 1)) + z;
+}
+
+std::vector<glm::vec3> make3DGrid(int widthX, int widthY, int widthZ, int squaresInX, int squaresInY, int squaresInZ) {
+    std::vector<glm::vec3> points;
+    std::vector<glm:: vec3> lines;
+
+    int deltaX = widthX / squaresInX;
+    int deltaY = widthY / squaresInY;
+    int deltaZ = widthZ / squaresInZ;
+
+    for (int x = 0; x <= squaresInX; x++) {
+        for (int y = 0; y <= squaresInY; y++) {
+            for (int z = 0; z <= squaresInZ; z++) {
+                int xVal = -(widthX / 2) + x * deltaX;
+                int yVal = -(widthY / 2) + y * deltaY;
+                int zVal = -(widthZ / 2) + z * deltaZ;
+                points.emplace_back(xVal, yVal, zVal);
+            }
+        }
+    }
+
+    for (int x = 0; x < squaresInX; x++) {
+        for (int y = 0; y < squaresInY; y++) {
+            for (int z = 0; z < squaresInZ; z++) {
+
+                int frontBottomLeft = getIndex(x, y, z, squaresInY, squaresInZ);
+                int frontBottomRight = getIndex(x + 1, y, z, squaresInY, squaresInZ);
+                int frontTopLeft = getIndex(x, y + 1, z, squaresInY, squaresInZ);
+                int frontTopRight = getIndex(x + 1, y + 1, z, squaresInY, squaresInZ);
+
+                int backBottomLeft = getIndex(x, y , z + 1, squaresInY, squaresInZ);
+                int backBottomRight = getIndex(x + 1, y, z + 1, squaresInY, squaresInZ);
+                int backTopLeft = getIndex(x, y + 1, z + 1, squaresInY, squaresInZ);
+                int backTopRight = getIndex(x + 1, y + 1, z + 1, squaresInY, squaresInZ);
+
+                lines.emplace_back(points[frontBottomLeft]);
+                lines.emplace_back(points[frontBottomRight]);
+
+                lines.emplace_back(points[frontBottomRight]);
+                lines.emplace_back(points[frontTopRight]);
+
+                lines.emplace_back(points[frontTopRight]);
+                lines.emplace_back(points[frontTopLeft]);
+
+                lines.emplace_back(points[frontTopLeft]);
+                lines.emplace_back(points[frontBottomLeft]);
+
+
+                lines.emplace_back(points[backBottomLeft]);
+                lines.emplace_back(points[backBottomRight]);
+
+                lines.emplace_back(points[backBottomRight]);
+                lines.emplace_back(points[backTopRight]);
+
+                lines.emplace_back(points[backTopRight]);
+                lines.emplace_back(points[backTopLeft]);
+
+                lines.emplace_back(points[backTopLeft]);
+                lines.emplace_back(points[backBottomLeft]);
+
+
+                lines.emplace_back(points[frontBottomLeft]);
+                lines.emplace_back(points[backBottomLeft]);
+
+                lines.emplace_back(points[frontBottomRight]);
+                lines.emplace_back(points[backBottomRight]);
+
+                lines.emplace_back(points[frontTopLeft]);
+                lines.emplace_back(points[backTopLeft]);
+
+                lines.emplace_back(points[frontTopRight]);
+                lines.emplace_back(points[backTopRight]);
+            }
+        }
+    }
+
+    return lines;
+}

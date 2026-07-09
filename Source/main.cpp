@@ -71,12 +71,15 @@ int main() {
     auto bhMesh = makeSphere(BH.getRadius());
     BH.setMesh(bhMesh);
 
+    std::vector<glm::vec3> gridMesh = make3DGrid(100, 100, 100, 10, 10, 10);
+
 
     glm::mat4 sphereMVP;
     glm::mat4 trailMVP;
+    glm::mat4 gridMVP;
     glm::mat4 view;
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
-    glm::mat4 BHTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    glm::mat4 BHTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -15.0f));
 
     setDisk(BH, defaultParticle);
 
@@ -86,20 +89,19 @@ int main() {
     sceneState.blackhole = &BH;
     sceneState.trailPositions = &defaultTrailPositions;
     sceneState.camera = &camera;
-    // sceneState.particles = &particles;
 
     glfwSetWindowUserPointer(window, &sceneState);
     glfwSetKeyCallback(window, keyCallBack);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    GLuint sphereVAO = 0, trailVAO = 0;
-    GLuint sphereVBO = 0, trailVBO = 0;
+    GLuint sphereVAO = 0, trailVAO = 0, gridVAO = 0;
+    GLuint sphereVBO = 0, trailVBO = 0, gridVBO = 0;
 
     // Binds the init vao and vbo variables and vertices
-    // setVAO(VAO, VBO, GL_DYNAMIC_DRAW, defaultParticle.getMesh());
     setVAO(sphereVAO, sphereVBO, GL_DYNAMIC_DRAW, BH.getMesh());
     setTrailVao(trailVAO, trailVBO, GL_DYNAMIC_DRAW, defaultTrailPositions);
+    setVAO(gridVAO, gridVBO, GL_DYNAMIC_DRAW, gridMesh);
 
     bool hasCaptured = false;
     float accumulatedTime = 0;
@@ -183,6 +185,7 @@ int main() {
 
         sphereMVP = projection * view * BHTranslation;
         trailMVP = projection * view * glm::mat4(1.0f);
+        gridMVP = projection * view * BHTranslation;
 
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
         glBufferData(GL_ARRAY_BUFFER, BH.getMeshSize() * sizeof(glm::vec3), BH.getMeshData(), GL_DYNAMIC_DRAW);
@@ -234,6 +237,13 @@ int main() {
         glBindVertexArray(trailVAO);
         glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
         glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+
+        glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
+        glBufferData(GL_ARRAY_BUFFER, gridMesh.size() * sizeof(glm::vec3), gridMesh.data(), GL_DYNAMIC_DRAW);
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(gridMVP));
+        glBindVertexArray(gridVAO);
+        glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
+        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(gridMesh.size()));
 
 
         glfwPollEvents();
