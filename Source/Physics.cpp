@@ -133,6 +133,10 @@ void setParticleOrbit(Particle &particle, Particle &BH, const float &velocityMul
 
     velocity *= velocityMultiplayer;
 
+    auto particleSpeed = speed(velocity);
+
+    particle.setTrailColor(particleSpeed);
+
     particle.setVelocity(velocity);
 }
 

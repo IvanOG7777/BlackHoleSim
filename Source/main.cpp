@@ -59,7 +59,7 @@ int main() {
     camera.setPosition(0, 0, 20);
     Blackhole BH;
     SphereParticle defaultParticle;
-    defaultParticle.setRadius(0.2f);
+    defaultParticle.setRadius(0.1f);
     BH.setMass(40);
     auto defaultParticleMesh = makeSphere(defaultParticle.getRadius());
     defaultParticle.setMesh(defaultParticleMesh);
@@ -111,6 +111,8 @@ int main() {
     sceneState.particle = &defaultParticle;
     sceneState.blackhole = &BH;
     sceneState.trailPositions = &defaultTrailPositions;
+    sceneState.positions = &particlesTrails;
+    sceneState.particles = &particles;
     sceneState.camera = &camera;
 
     glfwSetWindowUserPointer(window, &sceneState);
@@ -214,7 +216,7 @@ int main() {
         glBufferData(GL_ARRAY_BUFFER, BH.getMeshSize() * sizeof(glm::vec3), BH.getMeshData(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE,  glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
-        glUniform3f(threeDUColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform3f(threeDUColorLoc, 0.0f, 0.0f, 0.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(BH.getMeshSize()));
 
         float bhMU = BH.getMU();

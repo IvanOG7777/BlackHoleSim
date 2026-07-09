@@ -38,51 +38,6 @@ void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Particle
 }
 
 const char *makeVertexShader(const std::string &shaderType) {
-    if (shaderType == "CircleVertex") {
-        return R"GLSL(
-            #version 330 core
-            layout(location = 0) in vec3 aPos; // Current vertex we are handling from the vector of vertices
-
-            uniform vec2 uResolution; //holds screen W/H
-            uniform vec2 uOffset; // current position of the particle
-            uniform float uScale; //  particles radius
-
-            void main() {
-                vec2 worldPos = aPos.xy * uScale + uOffset; // only use the xy values of the vertices, scale it and add the current position to get real new position
-
-                vec2 ndc = worldPos / uResolution; // convert from pixel coordinated to normalized range [0,1]
-                ndc = ndc * 2.0 - 1.0; // convert from normalized range to normalized device coordinates [-1,1]
-
-                gl_Position = vec4(ndc.x, ndc.y, 0.0, 1.0); // Final position in clip space (OpenGL expects vec4 in NDC range)
-            }
-        )GLSL";
-    }
-
-    if (shaderType == "TrailVertex") {
-        return R"GLSL(
-            #version 330 core
-            layout(location = 0) in vec3 aPos; // Current vertex we are handling from the vector of vertices
-            layout(location = 1) in vec3 trailColor; // input a vec3 color
-
-            uniform vec2 uResolution; //holds screen W/H
-            uniform vec2 uOffset; // current position of the particle
-            uniform float uScale; //  particles radius
-
-            out vec3 colorToFragment; // send out a vec3Color
-
-            void main() {
-                vec2 worldPos = aPos.xy * uScale + uOffset; // only use the xy values of the vertices, scale it and add the current position to get real new position
-
-                vec2 ndc = worldPos / uResolution; // convert from pixel coordinated to normalized range [0,1]
-                ndc = ndc * 2.0 - 1.0; // convert from normalized range to normalized device coordinates [-1,1]
-
-                gl_Position = vec4(ndc.x, ndc.y, 0.0, 1.0); // Final position in clip space (OpenGL expects vec4 in NDC range)
-
-                colorToFragment = trailColor; // assign so fragment can see
-            }
-        )GLSL";
-    }
-
     if (shaderType == "3DVertex") {
         return R"GLSL(
             #version 330 core
@@ -100,28 +55,6 @@ const char *makeVertexShader(const std::string &shaderType) {
 }
 
 const char *makeFragmentShader(const std::string& shaderType) {
-    if (shaderType == "CircleFragment") {
-        return R"GLSL(
-            #version 330 core
-            out vec4 FragColor; // color that will be sent out to screen
-            uniform vec3 uColor; // RGB
-            void main() {
-                FragColor = vec4(uColor, 1.0); // pass in the RBG plus alpha
-            }
-        )GLSL";
-    }
-
-    if (shaderType == "TrailFragment") {
-        return R"GLSL(
-            #version 330 core
-            in vec3 colorToFragment; // color coming in from trailVertex
-            out vec4 TrailColor; // Final color to output
-            void main() {
-                TrailColor = vec4(colorToFragment, 1.0); // set the trail vertex and alpah
-            }
-        )GLSL";
-    }
-
     if (shaderType == "3DFragment") {
         return R"GLSL(
            #version 330 core
