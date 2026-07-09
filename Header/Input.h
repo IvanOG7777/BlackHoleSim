@@ -10,8 +10,10 @@
 
 #include "Particle.h"
 #include "Physics.h"
+#include "Camera.h"
 
 struct SceneState {
+    Camera *camera;
     Particle *particle;
     Particle *blackhole;
     std::vector<Particle::ParticleTrail> *trailPositions;
@@ -19,5 +21,7 @@ struct SceneState {
 };
 
 void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods);
+
+void cursorPositionCallback(GLFWwindow *window, double positionX, double positionY);
 
 #endif //PARTICLESIM_INPUT_H

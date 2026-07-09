@@ -47,3 +47,41 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
         state->trailPositions->clear();
     }
 }
+
+void cursorPositionCallback(GLFWwindow *window, double positionX, double positionY) {
+    auto *state = static_cast<SceneState*>(glfwGetWindowUserPointer(window));
+    auto *camera = state->camera;
+
+    //
+    if (camera->firstMove == true) {
+        camera->currentX = static_cast<float>(positionX);
+        camera->currentY = static_cast<float>(positionY);
+        camera->firstMove = false;
+        return;
+    }
+
+    float deltaX = camera->currentX - static_cast<float>(positionX);
+    float deltaY = camera->currentY - static_cast<float>(positionY);
+
+    float pitch = camera->getPitch();
+    float yaw = camera->getYaw();
+
+    yaw -= deltaX * 0.001f;
+    pitch += deltaY * 0.001f;
+
+    float maxPitch = glm::radians(89.0f);
+
+    if (pitch < -maxPitch) {
+        pitch = -maxPitch;
+    }
+
+    if (pitch > maxPitch) {
+        pitch = maxPitch;
+    }
+
+    camera->setYaw(yaw);
+    camera->setPitch(pitch);
+
+    camera->currentX = static_cast<float>(positionX);
+    camera->currentY = static_cast<float>(positionY);
+}

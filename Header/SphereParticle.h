@@ -31,6 +31,8 @@ public:
     size_t getTrailSize();
     ParticleTrail *getTrailData();
 
+    std::vector<glm::vec3> &getMesh();
+
 };
 
 #endif //PARTICLESIM_SPHERE_H

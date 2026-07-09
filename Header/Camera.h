@@ -14,6 +14,9 @@ public:
     float pitch;
     float speed;
     bool firstMove;
+    float currentX;
+    float currentY;
+    float currentZ;
 private:
     glm::vec3 position;
     glm::vec3 worldUp;

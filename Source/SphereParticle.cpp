@@ -42,3 +42,7 @@ size_t SphereParticle::getTrailSize() {
 Particle::ParticleTrail *SphereParticle::getTrailData() {
     return trailPositions.data();
 }
+
+std::vector<glm::vec3> &SphereParticle::getMesh() {
+    return mesh;
+}
