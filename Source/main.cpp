@@ -58,48 +58,27 @@ int main() {
     Camera camera;
     Blackhole BH;
     SphereParticle defaultParticle;
-    auto defaultParticleMesh = makeSphere(5.0f);
+    defaultParticle.setRadius(5.0f);
+    BH.setMass(40);
+    auto defaultParticleMesh = makeSphere(defaultParticle.getRadius());
     defaultParticle.setMesh(defaultParticleMesh);
-    // std:: vector<SphereParticle> sphereParticles;
+
+    BH.setMU(MU);
+    BH.setCaptureRadius();
+    BH.setPhotonSphere();
+    BH.setRadius(2.0f);
+    BH.setMass(100);
+    auto bhMesh = makeSphere(BH.getRadius());
+    BH.setMesh(bhMesh);
+
 
     glm::mat4 sphereMVP;
     glm::mat4 trailMVP;
     glm::mat4 view;
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
-    glm::mat4 BHTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -100.0f));
-
-    // sphereParticles.reserve(2000);
-    // for (int i = 0; i < 2000; i++) {
-    //     SphereParticle current;
-    //     auto mesh = makeSphere(5.0f);
-    //     current.setMesh(mesh);
-    //     setDisk(BH, current);
-    //     sphereParticles.emplace_back(current);
-    // }
-
-    BH.setMU(MU);
-    BH.setCaptureRadius();
-    BH.setPhotonSphere();
-    BH.setRadius(10);
-    BH.setMass(100);
-    auto bhMesh = makeSphere(BH.getRadius());
-    BH.setMesh(bhMesh);
-
-    // std::vector<Particle> particles;
-    // particles.reserve(2000);
-    //
-    // for (size_t i = 0; i < 2000; i++) {
-    //     Particle particle;
-    //     setDisk(BH, particle);
-    //     particles.emplace_back(particle);
-    // }
+    glm::mat4 BHTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
     setDisk(BH, defaultParticle);
-
-    // std::vector<std::vector<Particle::ParticleTrail> > vectorParticleTrails(2000);
-    // for (auto &trail : vectorParticleTrails) {
-    //     trail.reserve(1000);
-    // }
 
     std::vector<Particle::ParticleTrail> defaultTrailPositions;
 
@@ -114,12 +93,13 @@ int main() {
     glfwSetCursorPosCallback(window, cursorPositionCallback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    GLuint sphereVA0 = 0;
-    GLuint sphereVBO = 0;
+    GLuint sphereVAO = 0, trailVAO = 0;
+    GLuint sphereVBO = 0, trailVBO = 0;
 
+    // Binds the init vao and vbo variables and vertices
     // setVAO(VAO, VBO, GL_DYNAMIC_DRAW, defaultParticle.getMesh());
-    setVAO(sphereVA0, sphereVBO, GL_DYNAMIC_DRAW, BH.getMesh());
-    // setTrailVao(trailVAO, trailVBO, GL_DYNAMIC_DRAW, defaultTrailPositions);
+    setVAO(sphereVAO, sphereVBO, GL_DYNAMIC_DRAW, BH.getMesh());
+    setTrailVao(trailVAO, trailVBO, GL_DYNAMIC_DRAW, defaultTrailPositions);
 
     bool hasCaptured = false;
     float accumulatedTime = 0;
@@ -207,7 +187,7 @@ int main() {
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
         glBufferData(GL_ARRAY_BUFFER, BH.getMeshSize() * sizeof(glm::vec3), BH.getMeshData(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE,  glm::value_ptr(sphereMVP));
-        glBindVertexArray(sphereVA0);
+        glBindVertexArray(sphereVAO);
         glUniform3f(threeDUColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(BH.getMeshSize()));
 
@@ -226,11 +206,7 @@ int main() {
             // }
         }
 
-        float particleRadius = orbitalRadius(bhPosition, defaultParticle.getPosition());
         float particleSpeed = speed(defaultParticle.getVelocity());
-        float particleEnergy = orbitalEnergy(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity(), bhMU);
-        float particleMomentum = angularMomentum(bhPosition, defaultParticle.getPosition(), defaultParticle.getVelocity());
-        std::string particleOrbitType = orbitType(particleEnergy);
 
         glm::vec3 acceleration = gravitationalAcceleration(bhPosition, defaultParticle.getPosition(), bhMU);
         defaultParticle.setAcceleration(acceleration);
@@ -243,6 +219,22 @@ int main() {
             defaultTrailPositions.clear();
             setDisk(BH, defaultParticle);
         }
+
+        glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+        glBufferData(GL_ARRAY_BUFFER, defaultParticle.getMeshSize() * sizeof(glm::vec3), defaultParticle.getMeshData(), GL_DYNAMIC_DRAW);
+        sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), defaultParticle.getPosition());
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
+        glBindVertexArray(sphereVAO);
+        glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
+        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(defaultParticle.getMeshSize()));
+
+        glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
+        glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
+        glBindVertexArray(trailVAO);
+        glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
+        glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+
 
         glfwPollEvents();
         glfwSwapBuffers(window);

@@ -172,7 +172,7 @@ std::string orbitType(const float &particleEnergy) {
 
 void setDisk(Blackhole &blackhole, Particle &particle) {
     float innerRadius = blackhole.getPhotonSphere();
-    float outerRadius = innerRadius + 540.0f;
+    float outerRadius = innerRadius + 20.0f;
     float angle1 = 0.0f;
     float angle2 = 2 * PI;
 
@@ -187,19 +187,18 @@ void setDisk(Blackhole &blackhole, Particle &particle) {
     std::uniform_real_distribution<> radiusDis(innerRadius, outerRadius);
     std::uniform_real_distribution<> angleDis(angle1, angle2);
 
-    float randRadius = radiusDis(genRadius);
-    float randAngle = angleDis(genAngle);
+    auto randRadius = static_cast<float>(radiusDis(genRadius));
+    auto randAngle = static_cast<float>(angleDis(genAngle));
 
     float theta = randAngle;
     float x = bhX + (randRadius * std::cosf(theta));
-    float y = bhY + (randRadius * std::sinf(theta));
+    float z = bhY + (randRadius * std::sinf(theta));
 
-    particle.setPosition(x, y, 0);
+    particle.setPosition(x, 0, z);
     particle.setMass(5);
-    particle.setRadius(1);
     particle.setDamping(0.99);
 
-    float radius = orbitalRadius(blackhole.getPosition(), {x,y,0});
+    float radius = orbitalRadius(blackhole.getPosition(), {x,0,z});
 
     glm::vec3 velocity = circularVelocity(blackhole.getPosition(), particle.getPosition(), blackhole.getMU(), radius);
 
