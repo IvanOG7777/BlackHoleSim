@@ -59,7 +59,7 @@ int main() {
     camera.setPosition(0, 0, 20);
     Blackhole BH;
     SphereParticle defaultParticle;
-    defaultParticle.setRadius(5.0f);
+    defaultParticle.setRadius(0.2f);
     BH.setMass(40);
     auto defaultParticleMesh = makeSphere(defaultParticle.getRadius());
     defaultParticle.setMesh(defaultParticleMesh);
@@ -75,10 +75,14 @@ int main() {
     std::vector<SphereParticle> particles;
     particles.reserve(2000);
     for (int i = 0; i < 2000; i++) {
+        int randX = rand() % 100 + 1;
+        int randY = rand() % 150 + 1;
+        int randZ = rand() % 200 + 1;
         SphereParticle current;
-        current.setRadius(1.0f);
+        current.setRadius(0.2f);
         auto mesh = makeSphere(current.getRadius());
         current.setMesh(mesh);
+        current.setPhase(static_cast<float>(randX), static_cast<float>(randY), static_cast<float>(randZ));
         setDisk(BH, current);
         particles.emplace_back(current);
     }
@@ -91,15 +95,20 @@ int main() {
     glm::mat4 gridMVP;
     glm::mat4 view;
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
-    glm::mat4 BHTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -15.0f));
+    glm::mat4 BHTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
     setDisk(BH, defaultParticle);
 
     std::vector<Particle::ParticleTrail> defaultTrailPositions;
     std::vector<std::vector<Particle::ParticleTrail>> particlesTrails;
-    particlesTrails.reserve(2000);
+    particlesTrails.resize(2000);
     for (auto &trail : particlesTrails) {
         trail.reserve(1000);
+    }
+
+    int index = 0;
+    for (auto &particle : particles) {
+        particlesTrails[index].emplace_back(particle.getTrail());
     }
 
     sceneState.particle = &defaultParticle;
@@ -211,8 +220,6 @@ int main() {
         glUniform3f(threeDUColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(BH.getMeshSize()));
 
-
-        int particleIndex = 0;
         float bhMU = BH.getMU();
         auto bhPosition = BH.getPosition();
 
@@ -221,9 +228,9 @@ int main() {
             accumulatedTime -= FIXED_DT;
             deltaTime = FIXED_DT;
             defaultParticle.update(static_cast<float>(deltaTime));
-            // for (auto &particle: particles) {
-            //     particle.update(static_cast<float>(deltaTime));
-            // }
+            for (auto &particle: particles) {
+                particle.update(static_cast<float>(deltaTime));
+            }
         }
 
         float particleSpeed = speed(defaultParticle.getVelocity());
@@ -240,12 +247,24 @@ int main() {
             setDisk(BH, defaultParticle);
         }
 
+        index = 0;
+        for (auto &particle : particles) {
+            particleSpeed = speed(defaultParticle.getVelocity());
+
+            acceleration = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
+            particle.setAcceleration(acceleration);
+            particle.setTrailColor(particleSpeed);
+
+            particle.recordTrail(particlesTrails[index]);
+            index++;
+        }
+
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
         glBufferData(GL_ARRAY_BUFFER, defaultParticle.getMeshSize() * sizeof(glm::vec3), defaultParticle.getMeshData(), GL_DYNAMIC_DRAW);
         sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), defaultParticle.getPosition());
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
-        glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
+        glUniform3f(threeDUColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(defaultParticle.getMeshSize()));
 
         glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
@@ -255,7 +274,7 @@ int main() {
         glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
         glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
 
-        int index = 0;
+        index = 0;
         for (auto &sphere : particles) {
 
             glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
@@ -275,12 +294,6 @@ int main() {
 
             index++;
         }
-
-
-        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(gridMVP));
-        glBindVertexArray(gridVAO);
-        glUniform3f(threeDUColorLoc, 0.6f, 0.7f, 0.9f);
-        glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(gridMesh.size()));
 
 
         glfwPollEvents();
