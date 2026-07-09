@@ -107,9 +107,6 @@ int main() {
     }
 
     int index = 0;
-    for (auto &particle : particles) {
-        particlesTrails[index].emplace_back(particle.getTrail());
-    }
 
     sceneState.particle = &defaultParticle;
     sceneState.blackhole = &BH;
@@ -249,14 +246,13 @@ int main() {
 
         index = 0;
         for (auto &particle : particles) {
-            particleSpeed = speed(defaultParticle.getVelocity());
+            particleSpeed = speed(particle.getVelocity());
 
             acceleration = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
             particle.setAcceleration(acceleration);
             particle.setTrailColor(particleSpeed);
 
-            particle.recordTrail(particlesTrails[index]);
-            index++;
+            particle.recordTrail(particlesTrails[index++]);
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
@@ -275,21 +271,30 @@ int main() {
         glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
 
         index = 0;
-        for (auto &sphere : particles) {
+        for (auto &particle : particles) {
+
+            hasCaptured = hasBeenCaptured(bhPosition, particle.getPosition(), BH.getCaptureRadius());
+            if (hasCaptured == true) {
+                particlesTrails[index].clear();
+                setDisk(BH, particle);
+                particlesTrails[index].emplace_back(particle.getTrail());
+            }
+
+            auto color = particlesTrails[index].back().color;
 
             glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-            glBufferData(GL_ARRAY_BUFFER, sphere.getMeshSize() * sizeof(glm::vec3), sphere.getMeshData(), GL_DYNAMIC_DRAW);
-            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), sphere.getPosition());
+            glBufferData(GL_ARRAY_BUFFER, particle.getMeshSize() * sizeof(glm::vec3), particle.getMeshData(), GL_DYNAMIC_DRAW);
+            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), particle.getPosition());
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
             glBindVertexArray(sphereVAO);
             glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
-            glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(sphere.getMeshSize()));
+            glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(particle.getMeshSize()));
 
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
             glBufferData(GL_ARRAY_BUFFER, particlesTrails[index].size() * sizeof(Particle::ParticleTrail), particlesTrails[index].data(), GL_DYNAMIC_DRAW);
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
             glBindVertexArray(trailVAO);
-            glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
+            glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
             glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(particlesTrails[index].size()));
 
             index++;

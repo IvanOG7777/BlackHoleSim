@@ -30,7 +30,6 @@ void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Particle
     glBufferData(GL_ARRAY_BUFFER, trails.size() * sizeof(Particle::ParticleTrail), trails.data(), drawHint);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle::ParticleTrail), (void *)0); //position
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle::ParticleTrail), (void *)offsetof(Particle::ParticleTrail, color)); //color // skip over pos(16 bytes) to get to color Vector3 within ParticleTrail struct
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 

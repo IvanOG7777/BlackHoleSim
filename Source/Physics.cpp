@@ -202,5 +202,9 @@ void setDisk(Blackhole &blackhole, Particle &particle) {
 
     glm::vec3 velocity = circularVelocity(blackhole.getPosition(), particle.getPosition(), blackhole.getMU(), radius);
 
+    auto particleSpeed = speed(velocity);
+
+    particle.setTrailColor(particleSpeed);
+
     particle.setVelocity(velocity);
 }
