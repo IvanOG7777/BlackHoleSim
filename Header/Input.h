@@ -14,10 +14,10 @@
 
 struct SceneState {
     Camera *camera;
-    Particle *particle;
-    Particle *blackhole;
+    SphereParticle *particle;
+    SphereParticle *blackhole;
     std::vector<Particle::ParticleTrail> *trailPositions;
-    std:: vector<Particle> *particles;
+    std:: vector<SphereParticle> *particles;
 };
 
 void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods);
