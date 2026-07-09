@@ -73,10 +73,10 @@ glm::vec3 orbitalTangent(const glm::vec3 &BHPosition, const glm::vec3 &particleP
     glm::vec3 tangent = BHPosition - particlePosition; // get direction;
 
     float x = tangent.x;
-    float y = tangent.y;
+    float z = tangent.z;
 
     // Swap values and make perpendicular;
-    tangent.x = -y;
+    tangent.x = -z;
     tangent.y = x;
 
     // normalize new vector
@@ -177,7 +177,7 @@ void setDisk(Blackhole &blackhole, Particle &particle) {
     float angle2 = 2 * PI;
 
     float bhX = blackhole.getPosition().x;
-    float bhY = blackhole.getPosition().y;
+    float bhZ = blackhole.getPosition().z;
 
     std::random_device rd;
     std::mt19937 genRadius(rd());
@@ -192,7 +192,7 @@ void setDisk(Blackhole &blackhole, Particle &particle) {
 
     float theta = randAngle;
     float x = bhX + (randRadius * std::cosf(theta));
-    float z = bhY + (randRadius * std::sinf(theta));
+    float z = bhZ + (randRadius * std::sinf(theta));
 
     particle.setPosition(x, 0, z);
     particle.setMass(5);

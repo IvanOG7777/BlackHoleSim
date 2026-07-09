@@ -233,7 +233,7 @@ int main() {
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
         glBindVertexArray(trailVAO);
         glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
-        glDrawArrays(GL_POINTS, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
 
 
         glfwPollEvents();
