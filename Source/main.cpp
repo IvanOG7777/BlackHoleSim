@@ -257,19 +257,20 @@ int main() {
             particle.recordTrail(particlesTrails[index++]);
         }
 
+        auto dColor = defaultTrailPositions.back().color;
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
         glBufferData(GL_ARRAY_BUFFER, defaultParticle.getMeshSize() * sizeof(glm::vec3), defaultParticle.getMeshData(), GL_DYNAMIC_DRAW);
         sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), defaultParticle.getPosition());
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
-        glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 1.0f);
+        glUniform3f(threeDUColorLoc, dColor.x, dColor.y, dColor.z);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(defaultParticle.getMeshSize()));
 
         glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
         glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
         glBindVertexArray(trailVAO);
-        glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
+        glUniform3f(threeDUColorLoc, dColor.x, dColor.y, dColor.z);
         glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
 
         index = 0;
@@ -289,7 +290,7 @@ int main() {
             sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), particle.getPosition());
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
             glBindVertexArray(sphereVAO);
-            glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 0.0f);
+            glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
             glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(particle.getMeshSize()));
 
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
