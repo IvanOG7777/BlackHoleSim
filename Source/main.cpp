@@ -59,7 +59,7 @@ int main() {
     camera.setPosition(0, 0, 20);
     Blackhole BH;
     SphereParticle defaultParticle;
-    defaultParticle.setRadius(0.1f);
+    defaultParticle.setRadius(10.0f);
     BH.setMass(40);
     auto defaultParticleMesh = makeSphere(defaultParticle.getRadius());
     defaultParticle.setMesh(defaultParticleMesh);
@@ -94,7 +94,7 @@ int main() {
     glm::mat4 trailMVP;
     glm::mat4 gridMVP;
     glm::mat4 view;
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 1000.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 10000.0f);
     glm::mat4 BHTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
     setDisk(BH, defaultParticle);
@@ -216,7 +216,7 @@ int main() {
         glBufferData(GL_ARRAY_BUFFER, BH.getMeshSize() * sizeof(glm::vec3), BH.getMeshData(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE,  glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
-        glUniform3f(threeDUColorLoc, 0.0f, 0.0f, 0.0f);
+        glUniform3f(threeDUColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(BH.getMeshSize()));
 
         float bhMU = BH.getMU();
@@ -262,7 +262,7 @@ int main() {
         sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), defaultParticle.getPosition());
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
-        glUniform3f(threeDUColorLoc, 1.0f, 1.0f, 1.0f);
+        glUniform3f(threeDUColorLoc, 1.0f, 0.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(defaultParticle.getMeshSize()));
 
         glBindBuffer(GL_ARRAY_BUFFER, trailVBO);

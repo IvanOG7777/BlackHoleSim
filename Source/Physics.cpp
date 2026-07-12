@@ -176,7 +176,7 @@ std::string orbitType(const float &particleEnergy) {
 
 void setDisk(Blackhole &blackhole, Particle &particle) {
     float innerRadius = blackhole.getPhotonSphere();
-    float outerRadius = innerRadius + 500.0f;
+    float outerRadius = innerRadius + 200.0f;
     float angle1 = 0.0f;
     float angle2 = 2 * PI;
 
