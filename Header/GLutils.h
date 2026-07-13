@@ -13,7 +13,7 @@
 
 void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<glm::vec3> &vector3s);
 
-void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Particle::ParticleTrail> &trails);
+void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::array<Particle::ParticleTrail, 1000> &trails);
 
 const char *makeVertexShader(const std::string &shaderType);
 

@@ -1,3 +1,4 @@
+#include <array>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -99,12 +100,8 @@ int main() {
 
     setDisk(BH, defaultParticle);
 
-    std::vector<Particle::ParticleTrail> defaultTrailPositions;
-    std::vector<std::vector<Particle::ParticleTrail>> particlesTrails;
-    particlesTrails.resize(2000);
-    for (auto &trail : particlesTrails) {
-        trail.reserve(1000);
-    }
+    std::array<Particle::ParticleTrail, 1000> defaultTrailPositions;
+    std::vector<std::array<Particle::ParticleTrail,1000>> particlesTrails(2000);
 
     int index = 0;
 
@@ -242,8 +239,9 @@ int main() {
 
         hasCaptured = hasBeenCaptured(bhPosition, defaultParticle.getPosition(), BH.getCaptureRadius());
         if (hasCaptured == true) {
-            defaultTrailPositions.clear();
+            defaultTrailPositions = {};
             setDisk(BH, defaultParticle);
+            defaultTrailPositions.emplace_back(defaultParticle.getTrail());
         }
 
         index = 0;
@@ -258,13 +256,6 @@ int main() {
         }
 
         auto dColor = defaultTrailPositions.back().color;
-        glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-        glBufferData(GL_ARRAY_BUFFER, defaultParticle.getMeshSize() * sizeof(glm::vec3), defaultParticle.getMeshData(), GL_DYNAMIC_DRAW);
-        sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), defaultParticle.getPosition());
-        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
-        glBindVertexArray(sphereVAO);
-        glUniform3f(threeDUColorLoc, dColor.x, dColor.y, dColor.z);
-        glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(defaultParticle.getMeshSize()));
 
         glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
         glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
@@ -278,20 +269,12 @@ int main() {
 
             hasCaptured = hasBeenCaptured(bhPosition, particle.getPosition(), BH.getCaptureRadius());
             if (hasCaptured == true) {
-                particlesTrails[index].clear();
+                particlesTrails[index] = {};
                 setDisk(BH, particle);
                 particlesTrails[index].emplace_back(particle.getTrail());
             }
 
             auto color = particlesTrails[index].back().color;
-
-            glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-            glBufferData(GL_ARRAY_BUFFER, particle.getMeshSize() * sizeof(glm::vec3), particle.getMeshData(), GL_DYNAMIC_DRAW);
-            sphereMVP = projection * view * glm::translate(glm::mat4(1.0f), particle.getPosition());
-            glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
-            glBindVertexArray(sphereVAO);
-            glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
-            glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(particle.getMeshSize()));
 
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
             glBufferData(GL_ARRAY_BUFFER, particlesTrails[index].size() * sizeof(Particle::ParticleTrail), particlesTrails[index].data(), GL_DYNAMIC_DRAW);

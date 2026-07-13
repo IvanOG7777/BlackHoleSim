@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include <array>
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
 
@@ -103,7 +104,7 @@ public:
 
     const ParticleTrail &getTrail();
 
-    void recordTrail(std::vector<ParticleTrail> &passedPositions);
+    void recordTrail(std::array<ParticleTrail, 1000> &passedPositions);
     // std::vector<ParticleTrail> &positions, const ParticleTrail &particlePosition
 };
 

@@ -4,6 +4,8 @@
 
 #include "../Header/GLutils.h"
 
+#include <array>
+
 void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<glm::vec3> &vector3s) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -20,7 +22,7 @@ void setVAO(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<glm::vec3> &v
     glBindVertexArray(0);
 }
 
-void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::vector<Particle::ParticleTrail> &trails) {
+void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::array<Particle::ParticleTrail, 1000> &trails) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
 

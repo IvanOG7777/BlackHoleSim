@@ -209,7 +209,7 @@ const Particle::ParticleTrail &Particle::getTrail() {
     return trail;
 }
 
-void Particle::recordTrail(std::vector<ParticleTrail> &passedPositions) {
+void Particle::recordTrail(std::array<ParticleTrail, 1000> &passedPositions) {
     if (passedPositions.size() >= 1000) { // if size is greater than 100 position
         passedPositions.erase(passedPositions.begin()); // delete stale position
         passedPositions.emplace_back(trail); // place in newest positon
