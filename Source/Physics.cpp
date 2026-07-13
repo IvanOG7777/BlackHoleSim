@@ -174,7 +174,9 @@ void setDisk(Blackhole &blackhole, Particle &particle) {
 
     auto particleSpeed = speed(velocity);
 
+    particle.clearTrail();
     particle.setTrailColor(particleSpeed);
+    particle.recordTrail(particle.getTrail());
 
     particle.setVelocity(velocity);
 }

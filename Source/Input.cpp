@@ -8,8 +8,6 @@
 // Call back function used to set different particles states, will see how this acts for 3d version
 void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods) {
     auto *state = static_cast<SceneState *>(glfwGetWindowUserPointer(window));
-    auto *particleTrails = state->positions;
-    auto *particles = state->particles;
 
 
     if (key == GLFW_KEY_ESCAPE) {
@@ -20,12 +18,9 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
         state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 1.0f);
 
-        int index = 0;
-        for (auto &particle : *state->particles) {
-            auto &currentPosition = (*state->positions)[index];
-            currentPosition = {};
+        for (auto &particle: *state->particles) {
+            particle.clearTrail();
             setParticleOrbit(particle, *state->blackhole, 1.0f);
-            index++;
         }
     }
 
@@ -33,12 +28,10 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
         state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 0.0f);
 
-        int index = 0;
-        for (auto &particle : *state->particles) {
-            auto &currentPosition = (*state->positions)[index];
-            currentPosition = {};
+
+        for (auto &particle: *state->particles) {
+            particle.clearTrail();
             setParticleOrbit(particle, *state->blackhole, 0.0f);
-            index++;
         }
     }
 
@@ -46,12 +39,9 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
         state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 0.2f);
 
-        int index = 0;
-        for (auto &particle : *state->particles) {
-            auto &currentPosition = (*state->positions)[index];
-            currentPosition = {};
+        for (auto &particle: *state->particles) {
+            particle.clearTrail();
             setParticleOrbit(particle, *state->blackhole, 0.2f);
-            index++;
         }
     }
 
@@ -59,12 +49,9 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
         state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 0.5f);
 
-        int index = 0;
-        for (auto &particle : *state->particles) {
-            auto &currentPosition = (*state->positions)[index];
-            currentPosition = {};
+        for (auto &particle: *state->particles) {
+            particle.clearTrail();
             setParticleOrbit(particle, *state->blackhole, 0.5f);
-            index++;
         }
     }
 
@@ -72,12 +59,9 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
         state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 0.7f);
 
-        int index = 0;
-        for (auto &particle : *state->particles) {
-            auto &currentPosition = (*state->positions)[index];
-            currentPosition = {};
+        for (auto &particle: *state->particles) {
+            particle.clearTrail();
             setParticleOrbit(particle, *state->blackhole, 0.7f);
-            index++;
         }
     }
 
@@ -85,12 +69,9 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
         state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 1.2f);
 
-        int index = 0;
-        for (auto &particle : *state->particles) {
-            auto &currentPosition = (*state->positions)[index];
-            currentPosition = {};
+        for (auto &particle: *state->particles) {
+            particle.clearTrail();
             setParticleOrbit(particle, *state->blackhole, 1.2f);
-            index++;
         }
     }
 
@@ -98,18 +79,15 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
         state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 1.5f);
 
-        int index = 0;
-        for (auto &particle : *state->particles) {
-            auto &currentPosition = (*state->positions)[index];
-            currentPosition = {};
+        for (auto &particle: *state->particles) {
+            particle.clearTrail();
             setParticleOrbit(particle, *state->blackhole, 1.5f);
-            index++;
         }
     }
 }
 
 void cursorPositionCallback(GLFWwindow *window, double positionX, double positionY) {
-    auto *state = static_cast<SceneState*>(glfwGetWindowUserPointer(window));
+    auto *state = static_cast<SceneState *>(glfwGetWindowUserPointer(window));
     auto *camera = state->camera;
 
     //

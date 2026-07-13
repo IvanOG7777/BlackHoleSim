@@ -95,12 +95,12 @@ int main() {
     glm::mat4 trailMVP;
     glm::mat4 gridMVP;
     glm::mat4 view;
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), W/H, 0.1f, 10000.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), W / H, 0.1f, 10000.0f);
     glm::mat4 BHTranslation = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
     setDisk(BH, defaultParticle);
 
-    std:: array<Particle::ParticleTrail, 1000> &defaultTrailPositions = defaultParticle.getTrailPositons();
+    std::array<Particle::ParticleTrail, 1000> &defaultTrailPositions = defaultParticle.getTrailPositons();
 
     int index = 0;
 
@@ -167,7 +167,7 @@ int main() {
         if (dKey == GLFW_PRESS) {
             position += right * camera.speed;
         }
-        if (aKey== GLFW_PRESS) {
+        if (aKey == GLFW_PRESS) {
             position -= right * camera.speed;
         }
         if (spaceKey == GLFW_PRESS) {
@@ -178,15 +178,15 @@ int main() {
         }
 
         if (wKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
-            position += direction *  (camera.speed * 2);
+            position += direction * (camera.speed * 2);
         }
         if (sKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
-            position -= direction *  (camera.speed * 2);
+            position -= direction * (camera.speed * 2);
         }
         if (dKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
-            position += right *  (camera.speed * 2);
+            position += right * (camera.speed * 2);
         }
-        if (aKey== GLFW_PRESS && leftShift == GLFW_PRESS) {
+        if (aKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
             position -= right * (camera.speed * 2);
         }
         if (spaceKey == GLFW_PRESS && leftShift == GLFW_PRESS) {
@@ -209,7 +209,7 @@ int main() {
 
         glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
         glBufferData(GL_ARRAY_BUFFER, BH.getMeshSize() * sizeof(glm::vec3), BH.getMeshData(), GL_DYNAMIC_DRAW);
-        glUniformMatrix4fv(uMVP, 1, GL_FALSE,  glm::value_ptr(sphereMVP));
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
         glUniform3f(threeDUColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(BH.getMeshSize()));
@@ -241,7 +241,7 @@ int main() {
             setDisk(BH, defaultParticle);
         }
 
-        for (auto &particle : particles) {
+        for (auto &particle: particles) {
             particleSpeed = speed(particle.getVelocity());
 
             acceleration = gravitationalAcceleration(bhPosition, particle.getPosition(), bhMU);
@@ -255,15 +255,20 @@ int main() {
         auto color = defaultParticle.getTrailPositons()[lastIndex].color;
 
         glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-        glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail),
+                     defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
         glBindVertexArray(trailVAO);
         glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
-        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultParticle.getCount()));
+        if (!defaultParticle.isFull()) {
+            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultParticle.getCount()));
+        } else {
+            glDrawArrays(GL_LINE_STRIP, static_cast<GLint>(defaultParticle.getHead()),static_cast<GLsizei>(defaultParticle.getTrailSize() - defaultParticle.getHead()));
+        }
+        glDrawArrays(GL_LINE_STRIP,0, static_cast<GLsizei>(defaultParticle.getTail()));
 
         index = 0;
-        for (auto &particle : particles) {
-
+        for (auto &particle: particles) {
             hasCaptured = hasBeenCaptured(bhPosition, particle.getPosition(), BH.getCaptureRadius());
             if (hasCaptured == true) {
                 particle.clearTrail();
@@ -274,11 +279,18 @@ int main() {
             color = particle.getTrailPositons()[lastIndex].color;
 
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-            glBufferData(GL_ARRAY_BUFFER, particle.getTrailSize() * sizeof(Particle::ParticleTrail), particle.getTrailData(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, particle.getTrailSize() * sizeof(Particle::ParticleTrail),
+                         particle.getTrailData(), GL_DYNAMIC_DRAW);
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
             glBindVertexArray(trailVAO);
             glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
-            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(particle.getCount()));
+            if (!particle.isFull()) {
+                glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(particle.getCount()));
+            } else {
+                glDrawArrays(GL_LINE_STRIP, static_cast<GLint>(particle.getHead()),static_cast<GLsizei>(particle.getTrailSize() - particle.getHead()));
+            }
+            glDrawArrays(GL_LINE_STRIP,0, static_cast<GLsizei>(particle.getTail()));
+
 
             index++;
         }
