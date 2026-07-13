@@ -100,15 +100,13 @@ int main() {
 
     setDisk(BH, defaultParticle);
 
-    std::array<Particle::ParticleTrail, 1000> defaultTrailPositions;
-    std::vector<std::array<Particle::ParticleTrail,1000>> particlesTrails(2000);
+    std:: array<Particle::ParticleTrail, 1000> &defaultTrailPositions = defaultParticle.getTrailPositons();
 
     int index = 0;
 
     sceneState.particle = &defaultParticle;
     sceneState.blackhole = &BH;
     sceneState.trailPositions = &defaultTrailPositions;
-    sceneState.positions = &particlesTrails;
     sceneState.particles = &particles;
     sceneState.camera = &camera;
 
@@ -235,16 +233,14 @@ int main() {
         defaultParticle.setAcceleration(acceleration);
         defaultParticle.setTrailColor(particleSpeed);
 
-        defaultParticle.recordTrail(defaultTrailPositions);
+        defaultParticle.recordTrail(defaultParticle.getTrail());
 
         hasCaptured = hasBeenCaptured(bhPosition, defaultParticle.getPosition(), BH.getCaptureRadius());
         if (hasCaptured == true) {
-            defaultTrailPositions = {};
+            defaultParticle.clearTrail();
             setDisk(BH, defaultParticle);
-            defaultTrailPositions.emplace_back(defaultParticle.getTrail());
         }
 
-        index = 0;
         for (auto &particle : particles) {
             particleSpeed = speed(particle.getVelocity());
 
@@ -252,36 +248,37 @@ int main() {
             particle.setAcceleration(acceleration);
             particle.setTrailColor(particleSpeed);
 
-            particle.recordTrail(particlesTrails[index++]);
+            particle.recordTrail(particle.getTrail());
         }
 
-        auto dColor = defaultTrailPositions.back().color;
+        size_t lastIndex = (defaultParticle.getTail() - 1) % defaultParticle.getTrailSize();
+        auto color = defaultParticle.getTrailPositons()[lastIndex].color;
 
         glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
         glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail), defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
         glBindVertexArray(trailVAO);
-        glUniform3f(threeDUColorLoc, dColor.x, dColor.y, dColor.z);
-        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultTrailPositions.size()));
+        glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
+        glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultParticle.getCount()));
 
         index = 0;
         for (auto &particle : particles) {
 
             hasCaptured = hasBeenCaptured(bhPosition, particle.getPosition(), BH.getCaptureRadius());
             if (hasCaptured == true) {
-                particlesTrails[index] = {};
+                particle.clearTrail();
                 setDisk(BH, particle);
-                particlesTrails[index].emplace_back(particle.getTrail());
             }
 
-            auto color = particlesTrails[index].back().color;
+            lastIndex = (particle.getTail() - 1) % particle.getTrailSize();
+            color = particle.getTrailPositons()[lastIndex].color;
 
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-            glBufferData(GL_ARRAY_BUFFER, particlesTrails[index].size() * sizeof(Particle::ParticleTrail), particlesTrails[index].data(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, particle.getTrailSize() * sizeof(Particle::ParticleTrail), particle.getTrailData(), GL_DYNAMIC_DRAW);
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
             glBindVertexArray(trailVAO);
             glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
-            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(particlesTrails[index].size()));
+            glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(particle.getCount()));
 
             index++;
         }

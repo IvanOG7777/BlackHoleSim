@@ -5,40 +5,6 @@
 #include <random>
 #include "../Header/Physics.h"
 
-void keepInFrame(Particle &particle) {
-    float radius = particle.getRadius();
-    glm::vec3 pos = particle.getPosition();
-    glm::vec3 vel = particle.getVelocity();
-
-    float minX = radius;
-    float maxX = W - radius;
-    float minY = radius;
-    float maxY = H - radius;
-
-    if (pos.x < minX) {
-        pos.x = minX;
-        vel.x = -vel.x * COR;
-    }
-
-    if (pos.x > maxX) {
-        pos.x = maxX;
-        vel.x = -vel.x * COR;
-    }
-
-    if (pos.y < minX) {
-        pos.y = minY;
-        vel.y = -vel.y * COR;
-    }
-
-    if (pos.y > maxY) {
-        pos.y = maxY;
-        vel.y = -vel.y * COR;
-    }
-
-    particle.setPosition(pos);
-    particle.setVelocity(vel);
-}
-
 glm::vec3 gravitationalAcceleration(const glm::vec3 &BHPosition, const glm::vec3 &particlePosition, float mu) {
 
     glm::vec3 direction = BHPosition - particlePosition; // gets direction vector

@@ -17,7 +17,7 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
     }
 
     if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-        state->trailPositions = {};
+        state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 1.0f);
 
         int index = 0;
@@ -30,7 +30,7 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
     }
 
     if (key == GLFW_KEY_1 && action == GLFW_PRESS) {
-        state->trailPositions = {};
+        state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 0.0f);
 
         int index = 0;
@@ -43,7 +43,7 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
     }
 
     if (key == GLFW_KEY_2 && action == GLFW_PRESS) {
-        state->trailPositions = {};
+        state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 0.2f);
 
         int index = 0;
@@ -56,7 +56,7 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
     }
 
     if (key == GLFW_KEY_3 && action == GLFW_PRESS) {
-        state->trailPositions = {};
+        state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 0.5f);
 
         int index = 0;
@@ -69,7 +69,7 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
     }
 
     if (key == GLFW_KEY_4 && action == GLFW_PRESS) {
-        state->trailPositions = {};
+        state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 0.7f);
 
         int index = 0;
@@ -82,7 +82,7 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
     }
 
     if (key == GLFW_KEY_5 && action == GLFW_PRESS) {
-        state->trailPositions = {};
+        state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 1.2f);
 
         int index = 0;
@@ -95,7 +95,7 @@ void keyCallBack(GLFWwindow *window, int key, int scancode, int action, int mods
     }
 
     if (key == GLFW_KEY_6 && action == GLFW_PRESS) {
-        state->trailPositions = {};
+        state->particle->clearTrail();
         setParticleOrbit(*state->particle, *state->blackhole, 1.5f);
 
         int index = 0;

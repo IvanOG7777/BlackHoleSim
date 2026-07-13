@@ -27,7 +27,10 @@ protected:
     glm::vec3 acceleration;
     glm::vec3 forceAccumulator;
     ParticleTrail trail;
-    std::vector<ParticleTrail> trailPositions;
+    std::array<ParticleTrail, 1000> trailPositions;
+    size_t head;
+    size_t tail;
+    size_t count;
 
     float inverseMass;
     float mass;
@@ -39,7 +42,6 @@ protected:
 
 public:
     Particle();
-
 
     friend std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vector);
 
@@ -104,8 +106,16 @@ public:
 
     const ParticleTrail &getTrail();
 
-    void recordTrail(std::array<ParticleTrail, 1000> &passedPositions);
-    // std::vector<ParticleTrail> &positions, const ParticleTrail &particlePosition
+    void recordTrail(const ParticleTrail &passedTrail);
+
+    std::array<ParticleTrail, 1000> &getTrailPositons();
+
+    bool isFull();
+    bool isEmpty();
+    size_t overwrite(const ParticleTrail &passedTrail);
+    size_t getHead();
+    size_t getTail();
+    size_t getCount();
 };
 
 

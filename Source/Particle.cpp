@@ -16,10 +16,13 @@ Particle::Particle() {
     damping = 0.0f;
     kinetic = 0.0f;
     radius = 0.0f;
+    head = 0;
+    tail = 0;
+    count = 0;
 }
 
 Particle::ParticleTrail::ParticleTrail() {
-    position = {0.0f,0.0f,0.0f};
+    position = {0.0f, 0.0f, 0.0f};
     color = {1.0f, 1.0f, 1.0f};
 }
 
@@ -114,7 +117,7 @@ void Particle::setMass(float passedMass) {
         inverseMass = 0.0f;
     }
     mass = passedMass;
-    inverseMass = 1/mass;
+    inverseMass = 1 / mass;
 }
 
 const float &Particle::getInverseMass() const {
@@ -201,19 +204,54 @@ void Particle::setTrailColor(const float &particleSpeed) {
     //Faster speeds
 }
 
-void clearTrail() {
-
+void Particle::clearTrail() {
+    trailPositions = {};
+    head = 0;
+    tail = 0;
+    count = 0;
 }
 
 const Particle::ParticleTrail &Particle::getTrail() {
     return trail;
 }
 
-void Particle::recordTrail(std::array<ParticleTrail, 1000> &passedPositions) {
-    if (passedPositions.size() >= 1000) { // if size is greater than 100 position
-        passedPositions.erase(passedPositions.begin()); // delete stale position
-        passedPositions.emplace_back(trail); // place in newest positon
-        return;
+void Particle::recordTrail(const ParticleTrail &passedTrail) {
+    overwrite(passedTrail);
+}
+
+std::array<Particle::ParticleTrail, 1000> &Particle::getTrailPositons() {
+    return trailPositions;
+}
+
+bool Particle::isFull() {
+    return count == trailPositions.size();
+}
+
+bool Particle::isEmpty() {
+    return count == 0;
+}
+
+size_t Particle::overwrite(const ParticleTrail &passedTrail) {
+    if (isFull()) {
+        trailPositions[tail] = passedTrail;
+        head = (head + 1) % trailPositions.size();
+        tail = (tail + 1) % trailPositions.size();
+    } else {
+        trailPositions[tail] = passedTrail;
+        tail = (tail + 1) % trailPositions.size();
+        count++;
     }
-    passedPositions.emplace_back(trail); // keep placing until 100
+    return 1;
+}
+
+size_t Particle::getHead() {
+    return head;
+}
+
+size_t Particle::getTail() {
+    return tail;
+}
+
+size_t Particle::getCount() {
+    return count;
 }
