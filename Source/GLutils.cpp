@@ -32,6 +32,7 @@ void setTrailVao(GLuint &VAO, GLuint &VBO, GLenum drawHint, std::array<Particle:
     glBufferData(GL_ARRAY_BUFFER, trails.size() * sizeof(Particle::ParticleTrail), trails.data(), drawHint);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle::ParticleTrail), (void *)0); //position
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle::ParticleTrail), (void*)offsetof(Particle::ParticleTrail, color));
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
@@ -44,11 +45,22 @@ const char *makeVertexShader(const std::string &shaderType) {
         return R"GLSL(
             #version 330 core
             layout(location = 0) in vec3 aPos;
+            layout(location = 1) in vec3 aColor;
 
             uniform mat4 uMVP;
+            uniform bool uUseVertexColor;
+            uniform vec3 uColor;
+
+            out vec3 vertexColor;
 
             void main() {
                 gl_Position = uMVP * vec4(aPos, 1.0);
+
+                if (uUseVertexColor) {
+                    vertexColor = aColor;
+                } else {
+                    vertexColor = uColor;
+                }
             }
         )GLSL";
     }
@@ -61,11 +73,11 @@ const char *makeFragmentShader(const std::string& shaderType) {
         return R"GLSL(
            #version 330 core
 
+            in vec3 vertexColor;
             out vec4 fragment;
-            uniform vec3 uColor;
 
             void main() {
-                fragment = vec4(uColor, 1.0);
+                fragment = vec4(vertexColor, 1.0);
             }
         )GLSL";
     }

@@ -200,10 +200,12 @@ void Particle::setTrailColor(const float &particleSpeed) {
         t = (particleSpeed - ORANGE) / (RED_ORANGE - ORANGE);
         auto resultingColor = glm::vec3{1.0, 0.55, 0.0} + (t * (glm::vec3{1.0, 0.22, 0.0} - glm::vec3{1.0, 0.55, 0.0}));
         setTrail(position, resultingColor);
-    } else {
-        t = (particleSpeed - RED) / (RED - RED_ORANGE);
+    } else if (particleSpeed >= RED_ORANGE && particleSpeed <= RED){
+        t = (particleSpeed - RED_ORANGE) / (RED - RED_ORANGE);
         auto resultingColor = glm::vec3{1.0, 0.22, 0.0} + (t * (glm::vec3{1.0, 0.0, 0.0} - glm::vec3{1.0, 0.22, 0.0}));
         setTrail(position, resultingColor);
+    } else {
+        setTrail(position, {1.0, 0.0, 0.0});
     }
     //Faster speeds
 }

@@ -52,6 +52,7 @@ int main() {
 
     GLuint threeDUColorLoc = glGetUniformLocation(threeDShaderProgram, "uColor");
     GLuint uMVP = glGetUniformLocation(threeDShaderProgram, "uMVP");
+    GLuint useVertexColorLoc = glGetUniformLocation(threeDShaderProgram, "uUseVertexColor");
 
     SceneState sceneState{};
     // Particle defaultParticle;
@@ -209,6 +210,7 @@ int main() {
         glBufferData(GL_ARRAY_BUFFER, BH.getMeshSize() * sizeof(glm::vec3), BH.getMeshData(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(sphereMVP));
         glBindVertexArray(sphereVAO);
+        glUniform1i(useVertexColorLoc, GL_FALSE);
         glUniform3f(threeDUColorLoc, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(BH.getMeshSize()));
 
@@ -249,15 +251,12 @@ int main() {
             particle.recordTrail(particle.getTrail());
         }
 
-        size_t lastIndex = (defaultParticle.getTail() - 1) % defaultParticle.getTrailSize();
-        auto color = defaultParticle.getTrailPositons()[lastIndex].color;
-
         glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
         glBufferData(GL_ARRAY_BUFFER, defaultTrailPositions.size() * sizeof(Particle::ParticleTrail),
                      defaultTrailPositions.data(), GL_DYNAMIC_DRAW);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
         glBindVertexArray(trailVAO);
-        glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
+        glUniform1i(useVertexColorLoc, GL_TRUE);
         if (!defaultParticle.isFull()) {
             glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(defaultParticle.getCount()));
         } else {
@@ -265,7 +264,6 @@ int main() {
         }
         glDrawArrays(GL_LINE_STRIP,0, static_cast<GLsizei>(defaultParticle.getTail()));
 
-        index = 0;
         for (auto &particle: particles) {
             hasCaptured = hasBeenCaptured(bhPosition, particle.getPosition(), BH.getCaptureRadius());
             if (hasCaptured == true) {
@@ -273,26 +271,18 @@ int main() {
                 setDisk(BH, particle);
             }
 
-            lastIndex = (particle.getTail() - 1) % particle.getTrailSize();
-            color = particle.getTrailPositons()[lastIndex].color;
-
             glBindBuffer(GL_ARRAY_BUFFER, trailVBO);
-            glBufferData(GL_ARRAY_BUFFER, particle.getTrailSize() * sizeof(Particle::ParticleTrail),
-                         particle.getTrailData(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, particle.getTrailSize() * sizeof(Particle::ParticleTrail), particle.getTrailData(), GL_DYNAMIC_DRAW);
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(trailMVP));
             glBindVertexArray(trailVAO);
-            glUniform3f(threeDUColorLoc, color.x, color.y, color.z);
+            glUniform1i(useVertexColorLoc, GL_TRUE);
             if (!particle.isFull()) {
                 glDrawArrays(GL_LINE_STRIP, 0, static_cast<GLsizei>(particle.getCount()));
             } else {
                 glDrawArrays(GL_LINE_STRIP, static_cast<GLint>(particle.getHead()),static_cast<GLsizei>(particle.getTrailSize() - particle.getHead()));
             }
             glDrawArrays(GL_LINE_STRIP,0, static_cast<GLsizei>(particle.getTail()));
-
-
-            index++;
         }
-
 
         glfwPollEvents();
         glfwSwapBuffers(window);
