@@ -125,7 +125,6 @@ int main() {
 
     bool hasCaptured = false;
     float accumulatedTime = 0;
-    float diagnosticAccumulatedTime = 0;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -136,7 +135,6 @@ int main() {
         startTime = currentTime;
 
         accumulatedTime += static_cast<float>(deltaTime);
-        diagnosticAccumulatedTime += static_cast<float>(deltaTime);
 
         int w = W;
         int h = H;

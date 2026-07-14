@@ -14,7 +14,6 @@ Particle::Particle() {
     inverseMass = 0.0f;
     mass = 0.0f;
     damping = 0.0f;
-    kinetic = 0.0f;
     radius = 0.0f;
     head = 0;
     tail = 0;
@@ -115,6 +114,7 @@ void Particle::setMass(float passedMass) {
     if (passedMass <= 0.0f) {
         mass = 0.0f;
         inverseMass = 0.0f;
+        return;
     }
     mass = passedMass;
     inverseMass = 1 / mass;
@@ -134,14 +134,6 @@ void Particle::setDamping(float passedDamping) {
 
 const float &Particle::getDamping() const {
     return damping;
-}
-
-void Particle::setKinetic(float passedKinetic) {
-    kinetic = passedKinetic;
-}
-
-const float &Particle::getKinetic() const {
-    return kinetic;
 }
 
 void Particle::setRadius(float passedRadius) {
@@ -175,7 +167,6 @@ void Particle::clearAllValues() {
     inverseMass = 0.0f;
     mass = 0.0f;
     damping = 1.0f;
-    kinetic = 0.0f;
     radius = 0.0f;
 }
 
@@ -190,16 +181,29 @@ void Particle::setTrail(const glm::vec3 &passedPosition, const glm::vec3 &passed
 
 void Particle::setTrailColor(const float &particleSpeed) {
     //slower speeds
-    if (particleSpeed >= 0.0f && particleSpeed <= 10.0f) {
-        setTrail(position, {0.0f, 0.2f, 1.0f});
-    } else if (particleSpeed >= 10.0f && particleSpeed <= 16.0f) {
-        setTrail(position, {0.0, 0.8, 1.0});
-    } else if (particleSpeed >= 16.0f && particleSpeed <= 22.0f) {
-        setTrail(position, {1.0, 0.55, 0.0});
-    } else if (particleSpeed >= 22.0f && particleSpeed <= 30.0f) {
-        setTrail(position, {1.0, 0.22, 0.0});
+    float BLUE = 0.0f;
+    float CYAN = 10.0f;
+    float ORANGE = 16.0f;
+    float RED_ORANGE = 22.0f;
+    float RED = 30.0f;
+    float t = 0.0f;
+
+    if (particleSpeed >= BLUE && particleSpeed <= CYAN) {
+        t = (particleSpeed - BLUE) / (CYAN - BLUE);
+        auto resultingColor = glm::vec3{0.0f, 0.2f, 1.0f} + (t * (glm::vec3{0.0f, 0.8f, 1.0f} - glm::vec3{0.0f, 0.2f, 1.0f}));
+        setTrail(position, resultingColor);
+    } else if (particleSpeed >= CYAN && particleSpeed <= ORANGE) {
+        t = (particleSpeed - CYAN) / (ORANGE - CYAN);
+        auto resultingColor = glm::vec3{0.0f, 0.8f, 1.0f} + (t * (glm::vec3{1.0, 0.55, 0.0} - glm::vec3{0.0f, 0.8f, 1.0f}));
+        setTrail(position, resultingColor);
+    } else if (particleSpeed >= ORANGE && particleSpeed <= RED_ORANGE) {
+        t = (particleSpeed - ORANGE) / (RED_ORANGE - ORANGE);
+        auto resultingColor = glm::vec3{1.0, 0.55, 0.0} + (t * (glm::vec3{1.0, 0.22, 0.0} - glm::vec3{1.0, 0.55, 0.0}));
+        setTrail(position, resultingColor);
     } else {
-        setTrail(position, {1.0, 0.0, 0.0});
+        t = (particleSpeed - RED) / (RED - RED_ORANGE);
+        auto resultingColor = glm::vec3{1.0, 0.22, 0.0} + (t * (glm::vec3{1.0, 0.0, 0.0} - glm::vec3{1.0, 0.22, 0.0}));
+        setTrail(position, resultingColor);
     }
     //Faster speeds
 }

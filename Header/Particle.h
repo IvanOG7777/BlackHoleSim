@@ -6,7 +6,6 @@
 #define PARTICLESIM_PARTICLE_H
 
 #include <iostream>
-#include <vector>
 #include <array>
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
@@ -35,7 +34,6 @@ protected:
     float inverseMass;
     float mass;
     float damping;
-    float kinetic;
     float radius;
 
     void integrate(float duration);
@@ -61,7 +59,6 @@ public:
 
     void printVelocity() const;
 
-
     void setAcceleration(const glm::vec3 &passedAcceleration);
 
     void setAcceleration(float x, float y, float z);
@@ -79,10 +76,6 @@ public:
     void setDamping(float passedDamping);
 
     const float &getDamping() const;
-
-    void setKinetic(float passedKinetic);
-
-    const float &getKinetic() const;
 
     void setRadius(float passedRadius);
 
